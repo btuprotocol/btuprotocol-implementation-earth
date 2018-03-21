@@ -18,12 +18,15 @@ contract RES {
         uint                    _endDateTs;             // availability end date timestamps
         AvailabilityStatus      _availabilityStatus;    // reservation status
         string                  _metaDataLink;          // Link to Meta Data of the bookable resource
+        bytes32                 _signature;             // Signed hash of the availability data 
     }
 
     // resourceID is the current id of the Availability. It is incremented as a new one is published
     uint private resourceID;
-    mapping (uint => Availability) private availabilities;
     // Availabilities is a map where the key is the reourceID
+    mapping (uint => Availability) private availabilities;
+
+    event NewAvailabilityEvent(uint id);
 
     BTU private token;
 
@@ -35,8 +38,6 @@ contract RES {
         require (btuAddress != address(0) && token == address(0));
         token = BTU(btuAddress);
     }
-
-    event NewAvailabilityEvent(uint id);
 
     function publishAvailability(uint aType, uint minDeposit, uint commission, uint freeCancelDateTs,
                                  uint startDateTs, uint endDateTs, string metaDataLink)
