@@ -1,0 +1,3 @@
+[submodule "BTUToken"]
+	path = BTUToken
+	url = https://github.com/btuprotocol/BTUToken.git
