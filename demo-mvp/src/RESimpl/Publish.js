@@ -2,8 +2,12 @@ import React from 'react';
 import TextField from 'material-ui/TextField';
 import RaisedButton from 'material-ui/RaisedButton';
 import DatePicker from 'material-ui/DatePicker';
+import { Form, Label, Button } from 'semantic-ui-react';
+import DatePicker from 'react-datepicker';
+import 'react-datepicker/dist/react-datepicker.css';
 import PublishStyles from '../styles/PublishStyles';
 import DisplayOwnerAvailabilities from './DisplayOwnerAvailabilities';
+import moment from 'moment';
 
 class Publish extends React.Component {
     constructor(props, context) {
