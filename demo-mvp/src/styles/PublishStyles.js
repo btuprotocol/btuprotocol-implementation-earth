@@ -1,4 +1,4 @@
-export default class DispayPublicationStyle {
+export default class PublishStyle {
     div = {
         margin: '1em',
         padding: '2em'
@@ -9,7 +9,7 @@ export default class DispayPublicationStyle {
         float: 'left',
         margin: '1em',
         padding: '2em',
-        width: '30%',
+        width: '40%',
     };
     
     rightDiv = {

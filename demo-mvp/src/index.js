@@ -6,6 +6,9 @@ import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider'
 import SwipeableViews from 'react-swipeable-views';
 import IndexStyles from './styles/IndexStyles';
 import Web3Container from './web3/Web3Container';
+import { Menu, Container } from 'semantic-ui-react';
+import 'semantic-ui-css/semantic.min.css';
+import SwipeableViews from 'react-swipeable-views';
 import Publish from './RESimpl/Publish';
 import DisplayAvailabilities from './RESimpl/DisplayAvailabilities';
 

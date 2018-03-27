@@ -14,11 +14,6 @@ export default class Web3Container extends React.Component {
       const accounts = await getAccounts(web3)
       const BTU = await getContract(web3, BTUabstraction)
       const RES = await getContract(web3, RESabstraction)
-      try{
-        RES.setBTUToken(BTU.address, {from: accounts[0], gas: 120000});
-      } catch (error) {
-        console.log("Failed to setBTU address");
-      }
       this.setState({ web3, accounts, RES, BTU })
     } catch (error) {
       alert(`Failed to load web3, accounts, or contract. Check console for details.`)
