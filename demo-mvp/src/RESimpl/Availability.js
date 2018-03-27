@@ -8,13 +8,13 @@ export default class Availability {
     startDateTs;
     endDateTs;
     status;
-    metaDataLink;
+    metaData;
 
     constructor(smartResponse) {
         if (smartResponse !== null) {
             const availability = (typeof smartResponse[1] !== 'undefined' && typeof smartResponse[1].c !== 'undefined') ?
                 this.responseToAvailability(smartResponse) : smartResponse;
-            if (availability != null) {
+            if (availability !== null && typeof availability.providerAddress !== 'undefined') {
                 this.providerAddress = availability.providerAddress;
                 this.aType = availability.aType;
                 this.minDeposit = availability.minDeposit;
@@ -23,7 +23,7 @@ export default class Availability {
                 this.startDateTs = availability.startDateTs;
                 this.endDateTs = availability.endDateTs;
                 this.status = availability.status;
-                this.metaDataLink = availability.metaDataLink;
+                this.metaData = availability.metaData;
             }
         }
     }
@@ -41,7 +41,7 @@ export default class Availability {
         a.endDateTs = new Date(response[6].c[0]);
         const inSt = response[7].c[0];
         a.status = inSt > 2 ? 0 : inSt;
-        a.metaDataLink = response[8];
+        a.metaData = response[8];
         return a;
     }
 
@@ -62,7 +62,7 @@ export default class Availability {
         check = check && availability.startDateTs === this.startDateTs;
         check = check && availability.endDateTs === this.endDateTs;
         check = check && availability.availabilityStatus === this.availabilityStatus;
-        check = check && availability.metaDataLink === this.metaDataLink;
+        check = check && availability.metaData === this.metaData;
         return check;
     }
 
@@ -76,13 +76,15 @@ export default class Availability {
             "\nCan reserve from: " + this.startDateTs.toISOString() +
             "\nUntil: " + this.endDateTs.toISOString() +
             "\nAvailability status: " + this.status +
-            "\n Metadata to offchain implementation example: " + this.metaDataLink
+            "\n Metadata to offchain implementation example: " + this.metaData
     }
 
-    isNullProvider(provider) {
-        let check = provider === "0x0000000000000000000000000000000000000000";
-        check = check && provider == null;
-        check = check && typeof provider === 'undefined';
+    isNullProvider(providerAddress) {
+        if (providerAddress === null) {
+            providerAddress = this.providerAddress;
+        }
+        let check = (providerAddress === "0x0000000000000000000000000000000000000000");
+        check = check || providerAddress === null;
         return check;
     }
 }

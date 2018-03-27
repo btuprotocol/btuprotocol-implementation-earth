@@ -18,7 +18,7 @@ contract RES {
         uint                    _endDateTs;             // availability end date timestamps
         AvailabilityStatus      _availabilityStatus;    // reservation status
         string                  _metaDataLink;          // Link to Meta Data of the bookable resource
-        bytes32                 _signature;             // Signed hash of the availability data 
+        bytes32                 _signature;             // Signed hash of the availability data
     }
 
     // resourceID is the current id of the Availability. It is incremented as a new one is published

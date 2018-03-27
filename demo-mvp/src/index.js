@@ -1,16 +1,13 @@
 import React, { Component } from 'react';
 import ReactDOM from 'react-dom';
-import { AppBar } from 'material-ui';
-import { Tabs, Tab } from 'material-ui/Tabs';
-import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider'
-import SwipeableViews from 'react-swipeable-views';
-import IndexStyles from './styles/IndexStyles';
 import Web3Container from './web3/Web3Container';
 import { Menu, Container } from 'semantic-ui-react';
 import 'semantic-ui-css/semantic.min.css';
 import SwipeableViews from 'react-swipeable-views';
 import Publish from './RESimpl/Publish';
-import DisplayAvailabilities from './RESimpl/DisplayAvailabilities';
+import BookerPanel from './RESimpl/BookerPanel';
+import NavBar from './viewComponent/NavBar';
+import IndexStyles from './styles/IndexStyles';
 
 class Index extends Component {
 	constructor(props, context) {
@@ -19,55 +16,41 @@ class Index extends Component {
 	}
 
 	select = (index) => this.setState({ selectedIndex: index });
-	
-	handleChange = (value) => {
+
+	handleChange = (e, {value}) => {
 		value = value === 1 ? value : 0;
 		this.setState({ slideIndex: value });
-	} 
+	}
 
 	render() {
 		const styles = new IndexStyles();
-		function handleClick() {
-			window.open("http://booking-token.launchrock.com/");
-		}
 		return (
-			<div>
+			<Container fluid={true} style={styles.container}>
 				<header>
-					<MuiThemeProvider muiTheme={styles.appBar}>
-						<AppBar
-							title={<span style={styles.customStyles}>MVP DEMO - Booking Unit Token Protocol</span>}
-							onTitleClick={handleClick} />
-					</MuiThemeProvider>
+					<NavBar index={this.state.slideIndex}/>
 				</header>
 
-				<MuiThemeProvider muiTheme={styles.tabs}>
-					<Tabs onChange={this.handleChange} value={this.state.slideIndex} >
-						<Tab label="List decentralized publications" value={0} />
-						<Tab label="Decentralize a booking" value={1} />
-					</Tabs>
-				</MuiThemeProvider>
+        		<Menu pointing secondary>
+         			<Menu.Item name='booker' value={0} active={this.state.slideIndex === 0} onClick={this.handleChange} />
+         			<Menu.Item name='provider' value={1} active={this.state.slideIndex === 1} onClick={this.handleChange} />
+        		</Menu>
 
 				<Web3Container
 					renderLoading={() => <div>Loading Dapp Page...</div>}
 					render={({ accounts, RES, BTU }) => (
-					<SwipeableViews index={this.state.slideIndex}>
-						<div style={styles.styles2.slide}>
-							<MuiThemeProvider>
-								<div>
-									<DisplayAvailabilities accounts={accounts} RES={RES} BTU={BTU} />
-								</div>
-							</MuiThemeProvider>
+					<SwipeableViews index={this.state.slideIndex} style={styles.container}
+						containerStyle={{
+							overflow: "visible",
+						}}>
+						<div style={styles.slide}>
+							<BookerPanel accounts={accounts} RES={RES} BTU={BTU} />
 						</div>
-						<div style={styles.styles2.slide}>
-							<MuiThemeProvider muiTheme={styles.appBar}>
-								<div>
-									<Publish accounts={accounts} RES={RES} BTU={BTU} />
-								</div>
-							</MuiThemeProvider>
+						<div style={styles.slide}>
+							<Publish accounts={accounts} RES={RES} BTU={BTU} />
 						</div>
 					</SwipeableViews>
 				)}/>
-			</div>
+			</Container>
 		);
 	}
 }
