@@ -1,17 +1,12 @@
 import React from 'react';
-import { GridTile } from 'material-ui/GridList';
-import IconButton from 'material-ui/IconButton';
-import StarBorder from 'material-ui/svg-icons/toggle/star-border';
 import Availability from '../RESimpl/Availability';
-import Paper from 'material-ui/Paper';
 import {
   Table,
-  TableBody,
-  TableHeader,
-  TableHeaderColumn,
-  TableRow,
-  TableRowColumn,
-} from 'material-ui/Table';
+  Card,
+  Icon,
+  Image,
+  Button,
+} from 'semantic-ui-react';
 
 export default class AvailabilityService {
     state = {};
@@ -19,12 +14,11 @@ export default class AvailabilityService {
     constructor(state) {
         this.state = state;
     }
-    
+
     /**
      * Compare two list of availabilities
      * return true if a difference exist
      * according to Availability.equalsTo
-     *  
      */
     needRefresh(availabilities) {
         if (this.state.availabilities.length !== availabilities.length)
@@ -38,89 +32,93 @@ export default class AvailabilityService {
     }
 
     /**
-     * return a jsx GridTile based on availability
+     * return a jsx Card (semantic) based on availability
      */
     getTileFromAvailability(availability, callback) {
-       return <GridTile
-        key={ availability.resourceId }
-        title={ "Booking " + availability.resourceId }
-        subtitle={ <span>Status :<b>{this.stringStatus[availability.status]}</b></span> }
-        actionIcon={
-            <IconButton onClick={(e) => callback(e, availability.resourceId)}>
-                <StarBorder color="white" />
-            </IconButton>
-        }
-        >
-        <img src={availability.metaDataLink} alt={availability.metaDataLink} />
-        </GridTile>
+       return typeof availability.providerAddress !== 'undefined' ? <Card>
+                <Image  src={availability.metaData} alt={availability.metaData} />
+                <Card.Content>
+                  <Card.Header>
+                    { "Resource " + availability.resourceId }
+                    <p>{ "Provided by " + availability.providerAddress.substring(0,8) + "..." }</p>
+                  </Card.Header>
+                  <Card.Meta>
+                    <h3>Available from:</h3>
+                    <p className='date'>{ availability.startDateTs.toDateString() }</p>
+                    <h3>To: </h3>
+                    <p className='date'>{ availability.endDateTs.toDateString() }</p>
+                    <h3>Can be cancel until: </h3>
+                    <p className='date'>{ availability.freeCancelDateTs.toDateString() }</p>
+                    <h3>at</h3>
+                    <p className='date'>{ availability.freeCancelDateTs.toTimeString() }</p>
+                  </Card.Meta>
+                  <Card.Description>
+                      Availibility number { availability.resourceId }
+                  </Card.Description>
+                </Card.Content>
+                <Card.Content extra>
+                  <Button onClick={(e) => callback(e, availability.resourceId)} color="teal">
+                    <Icon name='pin' />{ <span>Select</span> }
+                  </Button>
+                  <br/>
+                  <p>
+                    <Icon name='address book outline' />
+                    { <span>Status :<b>{this.stringStatus[availability.status]}</b></span> }
+                  </p>
+                </Card.Content>
+              </Card> : <Card>
+                          <Card.Content extra>
+                            <p>
+                              <Icon name='address book outline' />
+                              { <span>Status :<b>COMPLETE</b></span> }
+                            </p>
+                          </Card.Content>
+                        </Card>;
     }
 
     /**
-     * return the array displaying
-     * the focused availability  
+     * return array displaying availability
      */
     getAvailabilityTable(availability) {
-        const styles = {
-          paper: {
-            display: 'inline-block',
-            margin: '16px 32px 16px 0',
-            float: "left",
-          }
-        };
+      const header =  <Table.Header>
+                        <Table.Row>
+                          <Table.HeaderCell>Provider Address</Table.HeaderCell>
+                          <Table.HeaderCell>Type of rent</Table.HeaderCell>
+                          <Table.HeaderCell>Minimum Deposit</Table.HeaderCell>
+                          <Table.HeaderCell>Commission</Table.HeaderCell>
+                          <Table.HeaderCell>Free fees cancellation date</Table.HeaderCell>
+                          <Table.HeaderCell>Available from</Table.HeaderCell>
+                          <Table.HeaderCell>Available to</Table.HeaderCell>
+                          <Table.HeaderCell>Status</Table.HeaderCell>
+                          <Table.HeaderCell>metaData</Table.HeaderCell>
+                        </Table.Row>
+                      </Table.Header>;
         if (availability != null ) {
-        return <Paper style={styles.paper}>
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHeaderColumn>Provider Address</TableHeaderColumn>
-                      <TableHeaderColumn>Type of rent</TableHeaderColumn>
-                      <TableHeaderColumn>Minimum Deposit</TableHeaderColumn>
-                      <TableHeaderColumn>Commission</TableHeaderColumn>
-                      <TableHeaderColumn>Free fees cancellation date</TableHeaderColumn>
-                      <TableHeaderColumn>Available from</TableHeaderColumn>
-                      <TableHeaderColumn>Available to</TableHeaderColumn>
-                      <TableHeaderColumn>Status</TableHeaderColumn>
-                      <TableHeaderColumn>MetaDataLink</TableHeaderColumn>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    <TableRow> 
-                      <TableRowColumn>{availability.providerAddress}</TableRowColumn>
-                      <TableRowColumn>{availability.aType}</TableRowColumn>
-                      <TableRowColumn>{availability.minDeposit}</TableRowColumn>
-                      <TableRowColumn>{availability.commission}</TableRowColumn>
-                      <TableRowColumn>{availability.freeCancelDateTs.toISOString()}</TableRowColumn>
-                      <TableRowColumn>{availability.startDateTs.toISOString()}</TableRowColumn>
-                      <TableRowColumn>{availability.endDateTs.toISOString()}</TableRowColumn>
-                      <TableRowColumn>{availability.status}</TableRowColumn>
-                      <TableRowColumn>{availability.metaDataLink}</TableRowColumn>
-                    </TableRow>
-                  </TableBody>
+        return <Table celled>
+                  {header}
+                  <Table.Body>
+                    <Table.Row>
+                      <Table.Cell>{availability.providerAddress}</Table.Cell>
+                      <Table.Cell>{availability.aType}</Table.Cell>
+                      <Table.Cell>{availability.minDeposit}</Table.Cell>
+                      <Table.Cell>{availability.commission}</Table.Cell>
+                      <Table.Cell>{availability.freeCancelDateTs.toISOString()}</Table.Cell>
+                      <Table.Cell>{availability.startDateTs.toISOString()}</Table.Cell>
+                      <Table.Cell>{availability.endDateTs.toISOString()}</Table.Cell>
+                      <Table.Cell>{availability.status}</Table.Cell>
+                      <Table.Cell>{availability.metaData}</Table.Cell>
+                    </Table.Row>
+                  </Table.Body>
                 </Table>
-              </Paper>  
         }  else {
-            return <Paper style={styles.paper}>
-                      <Table>
-                        <TableHeader>
-                            <TableRow>
-                            <TableHeaderColumn>Provider Address</TableHeaderColumn>
-                            <TableHeaderColumn>Type of rent</TableHeaderColumn>
-                            <TableHeaderColumn>Minimum Deposit</TableHeaderColumn>
-                            <TableHeaderColumn>Commission</TableHeaderColumn>
-                            <TableHeaderColumn>Free fees cancellation date</TableHeaderColumn>
-                            <TableHeaderColumn>Available from</TableHeaderColumn>
-                            <TableHeaderColumn>Available to</TableHeaderColumn>
-                            <TableHeaderColumn>Status</TableHeaderColumn>
-                            <TableHeaderColumn>MetaDataLink</TableHeaderColumn>
-                            </TableRow>
-                        </TableHeader>
-                        <TableBody>
-                            <TableRow>
-                            <TableRowColumn colSpan="9">No publication selected</TableRowColumn>
-                            </TableRow>
-                        </TableBody>
-                        </Table>
-                    </Paper>
-        }      
+            return <Table celled>
+                        {header}
+                        <Table.Body>
+                          <Table.Row>
+                            <Table.Cell colSpan="9">No publication selected</Table.Cell>
+                          </Table.Row>
+                        </Table.Body>
+                   </Table>
+        }
     }
 }

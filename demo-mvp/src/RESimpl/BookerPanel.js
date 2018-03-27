@@ -1,18 +1,14 @@
 import React from 'react';
-import { GridList } from 'material-ui/GridList';
-import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
-import Paper from 'material-ui/Paper';
-import Menu from 'material-ui/Menu';
-import MenuItem from 'material-ui/MenuItem';
-import DisplayAvailabilitiesStyles from '../styles/DisplayAvailabilitiesStyles';
+import _ from 'lodash';
+import { Grid, Segment, Menu, Button } from 'semantic-ui-react';
 import Availability from './Availability';
 import AvailabilityService from '../RESserv/AvailabilityService';
 
-/** 
+/**
  * Main class to provide functions to display all
  * availabilies in RES contract
  */
-class DisplayAvailabilities extends React.Component {
+class BookerPanel extends React.Component {
   constructor(props, context) {
     super(props, context);
     console.log("Blockchain Booking Protocol: ", props)
@@ -39,7 +35,7 @@ class DisplayAvailabilities extends React.Component {
   /**
    * Basic availabilities display
    * based on number of publications
-   * in RES contract. 
+   * in RES contract.
    */
   displayAvailabilities = async () => {
     const { RES } = this.props;
@@ -51,14 +47,13 @@ class DisplayAvailabilities extends React.Component {
       let it = i;
       const smartResponse = await RES.getAvailability(i);
       const availability = new Availability(smartResponse);
-      if (!availability.isNullProvider()) {
+      if (availability.isNullProvider() === false) {
         availability.setId(it);
         tmpAvailabilities.push(availability);
         const toPush = service.getTileFromAvailability(availability, this.focusAvailability);
         tiles.push(toPush);
       }
     }
-    console.log("loaded publications: ", tmpAvailabilities);
     if (service.needRefresh(tmpAvailabilities)) {
       this.setState({ availabilities: tmpAvailabilities });
       this.setState({ tiles: tiles });
@@ -70,7 +65,7 @@ class DisplayAvailabilities extends React.Component {
    * will refresh the view
    */
   componentDidMount = async () => {
-    setInterval(this.displayAvailabilities.bind(this), 5000)
+    setInterval(this.displayAvailabilities.bind(this), 7000)
   }
 
   /**
@@ -118,32 +113,49 @@ class DisplayAvailabilities extends React.Component {
    * View rendering
    */
   render() {
-    const styles = new DisplayAvailabilitiesStyles();
-    let table = this.service.getAvailabilityTable(this.state.availability);
+    let tilesCount = this.state.tiles.length;
+    let rows = 1;
+    const tilesByRow = 3;
+    if (tilesCount >= tilesByRow) {
+      rows = (tilesCount % tilesByRow) === 0 ? tilesCount / tilesByRow : (tilesCount / tilesByRow) + 1;
+    }
+    const tileGrid = _.times(rows, i => (
+      <Grid.Row key={i}>
+        <Grid.Column><Segment>{this.state.tiles[i*tilesByRow]}</Segment></Grid.Column>
+        <Grid.Column><Segment>{this.state.tiles[i*tilesByRow+1]}</Segment></Grid.Column>
+        <Grid.Column><Segment>{this.state.tiles[i*tilesByRow+2]}</Segment></Grid.Column>
+      </Grid.Row>
+    ))
     return (
-      <div >
-        <div>
-          {table}
-        </div>
+      <div>
         <h1>All providers publications</h1>
-        <h3>Selected booking: {this.state.selectedBooking}</h3>
-        <div>
-          <Paper style={styles.paper}>
-            <Menu>
-              <MenuItem primaryText="Info"  onClick={this.getAvailability}/>
-              <MenuItem primaryText="Status" onClick={this.getReservationStatus}/>
-              <MenuItem primaryText="Request Reservation" onClick={this.requestReservation}/>
-              <MenuItem primaryText="Availability Number" onClick={this.getAvailabilityNumber}/>
-            </Menu>
-          </Paper>
-        </div>
-        <MuiThemeProvider>
-          <GridList cols={4} style={styles.gridList}>
-            {this.state.tiles}
-          </GridList>
-        </MuiThemeProvider>
+        <h3>Selected booking: {this.state.availability === null ? "-" : this.state.selectedBooking}</h3>
+        <Grid stackable columns={2}>
+          <Grid.Row>
+            <Grid.Column width={4}>
+              <Segment>
+                <Menu vertical secondary>
+                  {/*
+                  <Menu.Item as="button" name='Info' active={this.state.slideIndex === 0} onClick={this.getAvailability} />
+                  <Menu.Item name='Status' active={this.state.slideIndex === 1} onClick={this.getReservationStatus} />
+                  */}
+                    <Menu.Item>
+                      <Button color="violet" onClick={this.requestReservation} disabled={this.state.availability === null}>Request Reservation</Button>
+                    </Menu.Item>
+                </Menu>
+              </Segment>
+            </Grid.Column>
+            <Grid.Column width={12}>
+              <Segment>
+                <Grid stackable columns={tilesByRow}>
+                  {tileGrid}
+                </Grid>
+              </Segment>
+            </Grid.Column>
+          </Grid.Row>
+        </Grid>
       </div>
     )
   }
 }
-export default DisplayAvailabilities;
+export default BookerPanel;

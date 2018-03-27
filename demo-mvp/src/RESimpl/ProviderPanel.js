@@ -1,18 +1,14 @@
 import React from 'react';
-import { GridList } from 'material-ui/GridList';
-import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
-import Paper from 'material-ui/Paper';
-import Menu from 'material-ui/Menu';
-import MenuItem from 'material-ui/MenuItem';
-import DisplayAvailabilitiesStyles from '../styles/DisplayAvailabilitiesStyles';
+import _ from 'lodash';
+import { Menu, Grid, Button } from 'semantic-ui-react';
 import Availability from './Availability';
 import AvailabilityService from '../RESserv/AvailabilityService';
 
-/**  
+/**
  * Class providing functions to display all
  * availabilies in RES contract
 */
-class DisplayOwnerAvailabilities extends React.Component {
+class ProviderPanel extends React.Component {
   constructor(props, context) {
     super(props, context);
     this.state = {
@@ -24,7 +20,7 @@ class DisplayOwnerAvailabilities extends React.Component {
     this.service = new AvailabilityService(this.state);
     this.focusAvailability = this.focusAvailability.bind(this);
   }
-   
+
   /**
    * Focus an availability and display it
    */
@@ -36,7 +32,7 @@ class DisplayOwnerAvailabilities extends React.Component {
   /**
    * Basic owner availabilities display
    * based on number of publications
-   * in RES contract. 
+   * in RES contract.
    */
   displayOwnerAvailabilities = async () => {
     const { accounts, RES } = this.props;
@@ -114,37 +110,50 @@ class DisplayOwnerAvailabilities extends React.Component {
     const response = await RES.completeTransaction(selectedResource, { from: accounts[0], gas: 360000 })
     console.log("completeTransaction: ", response);
   }
-  
+
   /**
    * View rendering
    */
   render() {
-    const styles = new DisplayAvailabilitiesStyles();
-    let table = this.service.getAvailabilityTable(this.state.availability);
+    // let table = this.service.getAvailabilityTable(this.state.availability);
+    let tilesCount = this.state.tiles.length;
+    let rows = 1;
+    const tilesByRow = 2;
+    if (tilesCount >= tilesByRow) {
+      rows = (tilesCount % tilesByRow) === 0 ? tilesCount / tilesByRow : (tilesCount / tilesByRow) + 1;
+    }
+    const tileGrid = _.times(rows, i => (
+      <Grid.Row key={i}>
+        <Grid.Column>{this.state.tiles[i*tilesByRow]}</Grid.Column>
+        <Grid.Column>{this.state.tiles[i*tilesByRow+1]}</Grid.Column>
+      </Grid.Row>
+    ))
     return (
-      <div >
+      <Grid columns={1}>
+        {/*
         <div>
           {table}
         </div>
-        <h1>My publications</h1>
-        <div>
-          <Paper style={styles.paper}>
-            <Menu>
-              <MenuItem primaryText="Info"  onClick={this.getAvailability}/>
-              <MenuItem primaryText="Status" onClick={this.getReservationStatus}/>
-              <MenuItem primaryText="Accept Reservation" onClick={this.acceptReservation}/>
-              <MenuItem primaryText="Complete Transaction" onClick={this.completeTransaction}/>
-            </Menu>
-          </Paper>
-        </div>
-        <h3>Selected booking: {this.state.selectedBooking}</h3>
-        <MuiThemeProvider>
-          <GridList cols={4} style={styles.gridList}>
-            {this.state.tiles}
-          </GridList>
-        </MuiThemeProvider>
-      </div>
+        */}
+        <Grid.Row>
+          <Grid.Column width={16}>
+        		<Menu pointing secondary>
+              <Menu.Item header>My resources</Menu.Item>
+         			<Menu.Item>
+                <Button color="violet" onClick={this.acceptReservation} disabled={this.state.availability === null}>Accept Reservation</Button>
+              </Menu.Item>
+         			<Menu.Item>
+                <Button color="purple" onClick={this.completeTransaction} disabled={this.state.availability === null}>Complete Transaction</Button>
+              </Menu.Item>
+        		</Menu>
+            <h3>Selected resource: {this.state.availability === null ? "-" : this.state.selectedBooking}</h3>
+            <Grid columns={tilesByRow} divided>
+              {tileGrid}
+            </Grid>
+          </Grid.Column>
+        </Grid.Row>
+      </Grid>
     )
   }
 }
-export default DisplayOwnerAvailabilities;
+export default ProviderPanel;

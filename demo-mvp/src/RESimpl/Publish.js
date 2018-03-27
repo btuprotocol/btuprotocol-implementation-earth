@@ -1,13 +1,9 @@
 import React from 'react';
-import TextField from 'material-ui/TextField';
-import RaisedButton from 'material-ui/RaisedButton';
-import DatePicker from 'material-ui/DatePicker';
-import { Form, Label, Button } from 'semantic-ui-react';
+import { Grid, Segment, Form, Label, Button } from 'semantic-ui-react';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
-import PublishStyles from '../styles/PublishStyles';
-import DisplayOwnerAvailabilities from './DisplayOwnerAvailabilities';
 import moment from 'moment';
+import ProviderPanel from './ProviderPanel';
 
 class Publish extends React.Component {
     constructor(props, context) {
@@ -17,13 +13,13 @@ class Publish extends React.Component {
             minDeposit: 1,
             commission: 2,
             freeCancelDateTs: new Date().getTime(),
-            freeCancelDate: new Date(),
+            freeCancelDate: moment(),
             startDateTs: new Date().getTime(),
-            startDate: new Date(),
+            startDate: moment(),
             endDateTs: new Date().getTime(),
-            endDate: new Date(),
+            endDate: moment(),
             status: 0,
-            metaDataLink: "http://www.apartmentsdowntown.net.au/wp-content/uploads/2016/02/hub-apartments-08-570x380.jpg",
+            metaData: "https://image.ibb.co/kqVvX7/logo.jpg",
         };
         this.publish = this.publish.bind(this);
         this.handleATypeChange = this.handleATypeChange.bind(this);
@@ -33,11 +29,11 @@ class Publish extends React.Component {
         this.handleStartDateTsChange = this.handleStartDateTsChange.bind(this);
         this.handleEndDateTsChange = this.handleEndDateTsChange.bind(this);
         this.handleStatusChange = this.handleStatusChange.bind(this);
-        this.handleMetaDataLinkChange = this.handleMetaDataLinkChange.bind(this);
+        this.handlemetaDataChange = this.handlemetaDataChange.bind(this);
     }
 
     /**
-     * view input / state mutator 
+     * view input / state mutator
      */
     handleATypeChange(event) {
         this.setState({aType: event.target.value});
@@ -48,29 +44,30 @@ class Publish extends React.Component {
     handleCommissionChange(event) {
         this.setState({commission: event.target.value});
     }
-    handleFreeCancelDateTsChange(event, date) {
-        this.setState({freeCancelDateTs:  new Date().getTime()});
+    handleFreeCancelDateTsChange(date) {
+        this.setState({freeCancelDateTs: date.unix()});
         this.setState({freeCancelDate: date});
     }
-    handleStartDateTsChange(event, date) {
-        this.setState({startDateTs: new Date().getTime()});
+    handleStartDateTsChange(date) {
+        this.setState({startDateTs: date.unix()});
         this.setState({startDate: date});
     }
-    handleEndDateTsChange(event, date) {
-        this.setState({endDateTs: new Date().getTime()});
+    handleEndDateTsChange(date) {
+        this.setState({endDateTs: date.unix()});
         this.setState({endDate: date});
     }
     handleStatusChange(event) {
         this.setState({status: event.target.value});
     }
-    handleMetaDataLinkChange(event) {
-        this.setState({metaDataLink: event.target.value});
+    handlemetaDataChange(event) {
+        this.setState({metaData: event.target.value});
     }
 
     /**
      * Transaction to RES contract
      */
     publish = async () => {
+        console.log('form submitted');
         const { accounts, RES } = this.props
         const response = await RES.publishAvailability(
             this.state.aType,
@@ -79,7 +76,7 @@ class Publish extends React.Component {
             this.state.freeCancelDateTs,
             this.state.startDateTs,
             this.state.endDateTs,
-            this.state.metaDataLink, {
+            this.state.metaData, {
             from: accounts[0]
         });
         console.log("publish availability: ", this.state, " blockchain response: ", response);
@@ -90,94 +87,95 @@ class Publish extends React.Component {
      */
     render() {
         const { accounts, RES, BTU } = this.props
-        const styles = new PublishStyles();
         return (
-            <div style={styles.div}>
-              <div style={styles.leftDiv}>
-                <form onSubmit={this.publish}>
-                    <TextField 
-                        id="aType" 
-                        name="aType" 
-                        type="number"
-                        inputStyle={styles.input}
-                        value={this.state.aType} 
-                        onChange={this.handleATypeChange} 
-                        floatingLabelText="Type of rent"
-                        floatingLabelFixed={true}    
-                    />
-                    <br />
-                    <TextField
-                        id="minDeposit"
-                        name="minDeposit"
-                        type="number"
-                        inputStyle={styles.input}
-                        value={this.state.minDeposit}
-                        onChange={this.handleMinDepositChange}
-                        floatingLabelText="Minimum Deposit"
-                        floatingLabelFixed={true}   
-                    />
-                    <br />
-                    <TextField
-                        id="commission"
-                        name="commission"
-                        type="number"
-                        inputStyle={styles.input}
-                        value={this.state.commission}
-                        onChange={this.handleCommissionChange}
-                        floatingLabelText="Commission"
-                        floatingLabelFixed={true}   
-                    />
-                    <br />
-                    <DatePicker 
-                    hintText="Free cancellation deadline" 
-                    id="freeCancelDateTs"
-                    name="freeCancelDateTs"
-                    value={this.state.freeCancelDate}
-                    onChange={this.handleFreeCancelDateTsChange}
-                    floatingLabelText="Free cancellation deadline"
-                    floatingLabelFixed={true}  
-                    />
-                    <br />
-                    <DatePicker 
-                    hintText="Available from" 
-                    id="startDateTs"
-                    name="startDateTs"
-                    value={this.state.startDate}
-                    onChange={this.handleStartDateTsChange}
-                    floatingLabelText="Available from"
-                    floatingLabelFixed={true}  
-                    />
-                    <br />
-                    <DatePicker 
-                    hintText="Available to" 
-                    id="endDateTs"
-                    name="endDateTs"
-                    value={this.state.endDate}
-                    onChange={this.handleEndDateTsChange}
-                    floatingLabelText="Available to"
-                    floatingLabelFixed={true}  
-                    />
-                    <br />
-                    <TextField
-                        id="metaDataLink"
-                        name="metaDataLink"
-                        type="text"
-                        inputStyle={styles.input}
-                        value={this.state.metaDataLink}
-                        onChange={this.handleMetaDataLinkChange}
-                        floatingLabelText="Offchain Metadata"
-                        floatingLabelFixed={true}   
-                    />
-                    <br />
-                <RaisedButton label="Publish" onClick={this.publish}></RaisedButton>
-              </form>
-            </div>
-            <div style={styles.rightDiv}>
-			    <div>
-					<DisplayOwnerAvailabilities accounts={accounts} RES={RES} BTU={BTU} />
-				</div>
-            </div>
-        </div>
+            <Grid stackable columns={2}>
+                <Grid.Row>
+                    <Grid.Column>
+                        <Segment>
+                            <Form onSubmit={this.publish} width='equals' size='large'>
+                                <Form.Input
+                                    id="aType"
+                                    name="aType"
+                                    type="number"
+                                    value={this.state.aType}
+                                    onChange={this.handleATypeChange}
+                                    label="Type of rent"
+                                    />
+                                <Form.Input
+                                    id="minDeposit"
+                                    name="minDeposit"
+                                    type="number"
+                                    value={this.state.minDeposit}
+                                    onChange={this.handleMinDepositChange}
+                                    label="Minimum Deposit"
+                                />
+                                <Form.Input
+                                    id="commission"
+                                    name="commission"
+                                    type="number"
+                                    value={this.state.commission}
+                                    onChange={this.handleCommissionChange}
+                                    label="Commission"
+                                />
+                                <Form.Field>
+                                {/*
+                                    react-datepicker style fix from https://github.com/Hacker0x01/react-datepicker/issues/1116
+                                */}
+                                    <style>
+                                        {`.react-datepicker__time-container .react-datepicker__time .react-datepicker__time-box ul.react-datepicker__time-list {
+                                        padding-left: 0;
+                                        padding-right: 0;
+                                        }`}
+                                    </style>
+                                    <Label>Free cancellation deadline
+                                    <DatePicker
+                                        id="freeCancelDateTs"
+                                        name="freeCancelDateTs"
+                                        dateFormat="LLL"
+                                        showTimeSelect
+                                        selected={this.state.freeCancelDate}
+                                        onChange={this.handleFreeCancelDateTsChange}
+                                    />
+                                    </Label>
+                                    <Label>Available from
+                                    <DatePicker
+                                        id="startDateTs"
+                                        name="startDateTs"
+                                        dateFormat="LLL"
+                                        selected={this.state.startDate}
+                                        onChange={this.handleStartDateTsChange}
+                                    />
+                                    </Label>
+                                    <Label>Available to
+                                    <DatePicker
+                                        id="endDateTs"
+                                        name="endDateTs"
+                                        dateFormat="LLL"
+                                        selected={this.state.endDate}
+                                        onChange={this.handleEndDateTsChange}
+                                    /></Label>
+                                </Form.Field>
+                                <Form.Input
+                                    id="metaData"
+                                    name="metaData"
+                                    type="text"
+                                    value={this.state.metaData}
+                                    onChange={this.handlemetaDataChange}
+                                    label="Offchain Metadata"
+                                />
+                            <Button type="submit" color="olive">Publish</Button>
+                        </Form>
+                    </Segment>
+                </Grid.Column>
+                <Grid.Column>
+                    <Segment>
+                        <div>
+                            <ProviderPanel accounts={accounts} RES={RES} BTU={BTU} />
+                        </div>
+                    </Segment>
+                </Grid.Column>
+            </Grid.Row>
+        </Grid>
         )
     }
 }
