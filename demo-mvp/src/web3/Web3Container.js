@@ -2,19 +2,23 @@ import React from 'react'
 import getWeb3 from './Web3'
 import getAccounts from './getAccounts'
 import getContract from './getContract'
-import RESabstraction from '../RES/RES.json'
+import RESabstraction from '../RES//RES.json'
 import BTUabstraction from '../BTU/BTU.json'
+import BTUTokenSaleabstraction from '../BTU/BTUTokenSale.json'
 
 export default class Web3Container extends React.Component {
   state = { web3: null, accounts: null, RES: null, BTU: null }
 
   async componentDidMount () {
     try {
-      const web3 = await getWeb3()
-      const accounts = await getAccounts(web3)
-      const BTU = await getContract(web3, BTUabstraction)
-      const RES = await getContract(web3, RESabstraction)
-      this.setState({ web3, accounts, RES, BTU })
+      const web3 = await getWeb3();
+      const accounts = await getAccounts(web3);
+      const BTUTokenSale = await getContract(web3, BTUTokenSaleabstraction);
+      const RES = await getContract(web3, RESabstraction);
+      const btuAddress = await BTUTokenSale.btuToken.call();
+      console.log('BTUAddr = ' + btuAddress);
+      const BTU = web3.eth.contract(BTUabstraction, btuAddress);
+      this.setState({ web3, accounts, RES, BTU });
     } catch (error) {
       alert(`Failed to load web3, accounts, or contract. Check console for details.`)
       console.log(error)
