@@ -17,7 +17,7 @@ module.exports = {
       host: "localhost",
       port: 8545,
       network_id: "3"
-    }
+    },
     metamask: {
         provider: function() {
             return new HDWalletProvider(mnemonic, "https://ropsten.infura.io/DYBja4A1RKCdnSP4DMYt");

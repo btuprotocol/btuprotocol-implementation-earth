@@ -11,8 +11,8 @@ export default class Web3Container extends React.Component {
 
   async componentDidMount () {
     try {
-      const web3 = await getWeb3();
-      const accounts = await getAccounts(web3);
+      const web3 = await getWeb3()
+      const accounts = await getAccounts(web3)
       const BTUTokenSale = await getContract(web3, BTUTokenSaleabstraction);
       const RES = await getContract(web3, RESabstraction);
       const btuAddress = await BTUTokenSale.btuToken.call();

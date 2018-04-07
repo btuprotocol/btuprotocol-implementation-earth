@@ -1,12 +1,11 @@
 export default class IndexStyles {
         container = {
-            overflow: "visible",
-            padding: 10,
-            height: "100%",
+            padding: 30,
         }
         slide = {
-            width: "90%",
-            overflow: "visible",
-            padding: 10,
-        };
+            margin: 30,
+        }
+        grid = {
+            margin: "auto",
+        }
 }
