@@ -10,6 +10,7 @@ import {
 import gif from '../img/load.gif'
 import Availability from './Availability'
 import AvailabilityService from '../RESserv/AvailabilityService'
+import RESService from '../RESserv/RESService'
 
 /**
  * Class providing functions to display all
@@ -18,6 +19,7 @@ import AvailabilityService from '../RESserv/AvailabilityService'
 class ProviderPanel extends React.Component {
   constructor(props, context) {
     super(props, context)
+    const { RES } = props
     this.state = {
       loaded: false,
       info: 'Information panel',
@@ -28,7 +30,8 @@ class ProviderPanel extends React.Component {
       availabilities: [],
       tiles: []
     }
-    this.service = new AvailabilityService(this.state)
+    this.resService = new RESService(RES)
+    this.availabilityService = new AvailabilityService(this.state)
     this.focusAvailability = this.focusAvailability.bind(this)
   }
 
@@ -46,25 +49,24 @@ class ProviderPanel extends React.Component {
    * in RES contract.
    */
   displayOwnerAvailabilities = async () => {
-    const { accounts, RES } = this.props
-    const service = new AvailabilityService(this.state)
+    const { accounts } = this.props
     let tmpAvailabilities = []
-    const AvailabilityNumber = await RES.getAvailabilityNumber.call()
+    const count = await this.resService.getAvailabilityNumberPromise()
+    this.setState({ countAvailabilities: count })
     var tiles = []
-    for (var i = 0; i < AvailabilityNumber.c[0]; i++) {
-      let it = i
-      const smartResponse = await RES.getAvailability(it)
-      const availability = new Availability(smartResponse)
-      availability.setId(it)
+    for (var i = 0; i < count; i++) {
+      let sr = await this.resService.getAvailabilityPromise(i)
+      const availability = new Availability(sr)
       if (availability.providerAddress.toUpperCase() === accounts[0].toUpperCase()) {
+        availability.setId(i)
         tmpAvailabilities.push(availability)
-        const toPush = service.getTileFromAvailability(availability, this.focusAvailability)
+        const toPush = this.availabilityService.getTileFromAvailability(availability, this.focusAvailability)
         tiles.push(toPush)
       }
     }
     this.setState({ possess: tiles.length })
-    if (service.needRefresh(tmpAvailabilities)) {
-      this.setState({ loaded: true })
+    if (this.availabilityService.needRefresh(tmpAvailabilities)) {
+      if (!this.state.loaded) { this.setState({ loaded: true }) }
       this.setState({ availabilities: tmpAvailabilities })
       this.setState({ tiles: tiles })
     }
@@ -78,14 +80,12 @@ class ProviderPanel extends React.Component {
   }
 
   /**
-   * alert focused availability
+   * Display the focused availability
    */
   getAvailability = async () => {
-    const { accounts, RES } = this.props
-    const selectedResource = this.state.selectedBooking
-    const smartResponse = await RES.getAvailability.call(selectedResource, { from: accounts[0] })
+    let smartResponse = await this.resService.getAvailabilityPromise(this.state.selectedBooking)
     const availability = new Availability(smartResponse)
-    availability.setId(selectedResource)
+    availability.setId(this.state.selectedBooking);
     if (availability !== null) {
       this.setState({ availability: availability })
       this.setState({ info: "Availability selected" })
@@ -98,9 +98,8 @@ class ProviderPanel extends React.Component {
    * Print the actual availability status in info
    */
   getReservationStatus = async () => {
-    const { accounts, RES } = this.props
-    const response = await RES.getReservationStatus(localStorage.getItem('ressourceId'), { from: accounts[0] })
-    this.setState({ info: "Selected availability status: " + this.state.statusEnum[response.c[0]] })
+    const st = await this.resService.getReservationStatusPromise(this.state.selectedBooking)
+    this.setState({ info: "Selected availability status: " + this.state.statusEnum[st] })
   }
 
   /**
@@ -109,16 +108,16 @@ class ProviderPanel extends React.Component {
    * to Confirmed
    */
   acceptReservation = async () => {
-    const selectedResource = this.state.selectedBooking
-    const { accounts, RES } = this.props
-    const smartResponse = await RES.getAvailability.call(selectedResource, { from: accounts[0] })
+    const { accounts } = this.props
+    const smartResponse = await this.resService.getAvailabilityPromise(this.state.selectedBooking)
     const availability = new Availability(smartResponse)
-    availability.setId(selectedResource)
-    if (availability.status !== 1) {
+    availability.setId(this.state.selectedBooking)
+    console.log("availability.status: ", availability.status, " type of: ", typeof availability.status)
+    if (availability.status != 1) {
       this.setState({ info: "This availability isn't waiting acceptation" })
       return
     }
-    await RES.acceptReservation(selectedResource, { from: accounts[0], gas: 360000  })
+    await this.resService.acceptReservationPromise(this.state.selectedBooking, accounts[0])
     this.setState({ info: "Reservation accepted" })
   }
 
@@ -126,16 +125,15 @@ class ProviderPanel extends React.Component {
    * The owner of the availability can complete a valid transaction
    */
   completeTransaction = async () => {
-    const selectedResource = this.state.selectedBooking
-    const { accounts, RES } = this.props
-    const smartResponse = await RES.getAvailability.call(selectedResource, { from: accounts[0] })
+    const { accounts } = this.props
+    const smartResponse = await this.resService.getAvailabilityPromise(this.state.selectedBooking, accounts[0])
     const availability = new Availability(smartResponse)
-    availability.setId(selectedResource)
+    availability.setId(this.state.selectedBooking)
     if (availability.status !== 2) {
       this.setState({ info: "No reservation to complete" })
       return
     }
-    const response = await RES.completeTransaction(selectedResource, { from: accounts[0], gas: 360000 })
+    const response = await this.resService.completeReservationPromise(this.state.selectedBooking, accounts[0])
     this.setState({ info: "Reservation finalized" + response })
   }
 

@@ -11,6 +11,8 @@ import {
 import gif from '../img/load.gif'
 import Availability from './Availability'
 import AvailabilityService from '../RESserv/AvailabilityService'
+import RESService from '../RESserv/RESService';
+import BTUService from '../RESserv/BTUService';
 
 /**
  * Main class to provide functions to display all
@@ -20,6 +22,7 @@ class BookerPanel extends React.Component {
   constructor(props, context) {
     super(props, context)
     console.log("Blockchain Booking Protocol: ", props)
+    const { BTU, RES } = props
     this.state = {
       loaded: false,
       info: 'Information panel',
@@ -30,7 +33,9 @@ class BookerPanel extends React.Component {
       availabilities: [],
       tiles: [],
     }
-    this.service = new AvailabilityService(this.state)
+    this.resService = new RESService(RES)
+    this.btuService = new BTUService(BTU)
+    this.availabilityService = new AvailabilityService(this.state)
     this.focusAvailability = this.focusAvailability.bind(this)
     this.displayAvailabilities = this.displayAvailabilities.bind(this)
     this.requestReservation = this.requestReservation.bind(this)
@@ -44,33 +49,31 @@ class BookerPanel extends React.Component {
     this.getAvailability()
   }
 
+
   /**
    * Basic availabilities display
    * based on number of publications
    * in RES contract.
    */
   displayAvailabilities = async () => {
-    const { RES } = this.props
-    const service = new AvailabilityService(this.state)
     let tmpAvailabilities = []
-    const AvailabilityNumber = await RES.getAvailabilityNumber.call()
-    this.setState({ countAvailabilities: AvailabilityNumber.c[0] })
+    const count = await this.resService.getAvailabilityNumberPromise()
+    this.setState({ countAvailabilities: count })
     var tiles = []
-    for (var i = 0; i < AvailabilityNumber.c[0]; i++) {
-      let it = i
-      const smartResponse = await RES.getAvailability(i)
-      const availability = new Availability(smartResponse)
+    for (var i = 0; i < count; i++) {
+      let sr = await this.resService.getAvailabilityPromise(i)
+      const availability = new Availability(sr)
       if (availability.isNullProvider() === false) {
-        availability.setId(it)
+        availability.setId(i)
         tmpAvailabilities.push(availability)
-        const toPush = service.getTileFromAvailability(availability, this.focusAvailability)
+        const toPush = this.availabilityService.getTileFromAvailability(availability, this.focusAvailability)
         tiles.push(toPush)
       }
     }
-    if (service.needRefresh(tmpAvailabilities)) {
-      if (!this.state.loaded) { this.setState({ loaded: true }) }
-      this.setState({ availabilities: tmpAvailabilities })
-      this.setState({ tiles: tiles })
+    if (this.availabilityService.needRefresh(tmpAvailabilities)) {
+        if (!this.state.loaded) { this.setState({ loaded: true }) }
+        this.setState({ availabilities: tmpAvailabilities })
+        this.setState({ tiles: tiles })
     }
   }
 
@@ -86,11 +89,9 @@ class BookerPanel extends React.Component {
    * Display the focused availability
    */
   getAvailability = async () => {
-    const { accounts, RES } = this.props;
-    const selectedResource = this.state.selectedBooking;
-    const smartResponse = await RES.getAvailability.call(selectedResource, { from: accounts[0] })
-    const availability = new Availability(smartResponse);
-    availability.setId(selectedResource);
+    let smartResponse = await this.resService.getAvailabilityPromise(this.state.selectedBooking)
+    const availability = new Availability(smartResponse)
+    availability.setId(this.state.selectedBooking);
     if (availability !== null) {
       this.setState({ availability: availability })
       this.setState({ info: "Availability selected" })
@@ -103,9 +104,8 @@ class BookerPanel extends React.Component {
    * Print the actual availability status in info
    */
   getReservationStatus = async () => {
-    const { accounts, RES } = this.props
-    const response = await RES.getReservationStatus(localStorage.getItem('ressourceId'), { from: accounts[0] })
-    this.setState({ info: "Selected availability status: " + this.state.statusEnum[response.c[0]] })
+    const st = await this.resService.getReservationStatusPromise(this.state.selectedBooking)
+    this.setState({ info: "Selected availability status: " + this.state.statusEnum[st] })
   }
 
   /**
@@ -115,17 +115,22 @@ class BookerPanel extends React.Component {
    * connected address to RES contract.
    */
   requestReservation = async () => {
-    const { accounts, RES, BTU } = this.props
+    const { accounts, RES } = this.props
     const selectedResource = this.state.selectedBooking
     const availability = this.state.availabilities[selectedResource]
-    const bookerBalance = await BTU.balanceOf(accounts[0])
+    const bookerBalance = await this.btuService.balanceOfPromise(accounts[0])
     if (bookerBalance < availability.minDeposit) {
-      this.setState({ info: "Not enought BTU funds for deposit" })
-      return
+      this.setState({ info: "Not enought BTU funds for deposit, for demo we will let you do..." })
+      // return
     }
-    await BTU.approve(accounts[0], availability.minDeposit, { from: RES.address, gas: 120000 })
-    const response = await RES.requestReservation(selectedResource, { from: accounts[0], gas: 120000 })
-    this.setState({ info: "request reservation: " + response })
+    await this.btuService.approvePromise(RES, availability, accounts[0])
+    const data = await this.resService.requestReservationPromise(selectedResource, accounts[0])
+    this.setState({ info: "request reservation: " + data })
+  }
+
+  provideBTU = async () => {
+    const { accounts } = this.props
+    await this.btuService.provideFiveBTUPromise(accounts[0])
   }
 
   /**
@@ -173,7 +178,7 @@ class BookerPanel extends React.Component {
                     <Button fluid color="purple" onClick={this.getReservationStatus} disabled={this.state.availability === null}>See Status</Button>
                   </Menu.Item>
                   <Menu.Item fitted='vertically'>
-                    <Button fluid color="green" onClick={this.getBtu}>Get 5 BTU</Button>
+                    <Button fluid color="green" onClick={this.provideBTU}>Get 5 BTU</Button>
                   </Menu.Item>
                 </Menu>
               </Segment>

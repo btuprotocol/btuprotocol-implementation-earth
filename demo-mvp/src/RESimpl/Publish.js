@@ -68,19 +68,25 @@ class Publish extends React.Component {
      * Transaction to RES contract
      */
     publish = async () => {
+        const self = this
         this.setState({ info: "Availability send" })
         const { accounts, RES } = this.props
-        const response = await RES.publishAvailability(
+        RES.methods.publishAvailability(
             this.state.aType,
             this.state.minDeposit,
             this.state.commission,
             this.state.freeCancelDateTs,
             this.state.startDateTs,
             this.state.endDateTs,
-            this.state.metaData, {
-                from: accounts[0]
-            })
-    this.setState({ info: "Availability published" })
+            this.state.metaData).send( { from: accounts[0], gas: 360000 }, function(err, data) {
+                if (err) {
+                    console.log("Publish failed: ", err)
+                    return
+                }
+                console.log("return of publish: ", data)
+                self.setState({ info: "Availability published" })
+            }
+        )
     }
 
     /**
@@ -128,9 +134,9 @@ class Publish extends React.Component {
                                         react-datepicker style fix from https://github.com/Hacker0x01/react-datepicker/issues/1116
                                     */}
                                         <style>
-                                            {`.react-datepicker__time-container .react-datepicker__time .react-datepicker__time-box ul.react-datepicker__time-list {
-                                            padding-left: 0
-                                            padding-right: 0
+                                            {`.react-datepicker__time-list {
+                                            padding-left: 0;
+                                            padding-right: 0;
                                             }`}
                                         </style>
                                         <Label>Free cancellation deadline

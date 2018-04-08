@@ -12,19 +12,15 @@ export default class Availability {
 
     constructor(smartResponse) {
         if (smartResponse !== null) {
-            const availability = (typeof smartResponse[1] !== 'undefined' && typeof smartResponse[1].c !== 'undefined') ?
-                this.responseToAvailability(smartResponse) : smartResponse
-            if (availability !== null && typeof availability.providerAddress !== 'undefined') {
-                this.providerAddress = availability.providerAddress
-                this.aType = availability.aType
-                this.minDeposit = availability.minDeposit
-                this.commission = availability.commission
-                this.freeCancelDateTs = availability.freeCancelDateTs
-                this.startDateTs = availability.startDateTs
-                this.endDateTs = availability.endDateTs
-                this.status = availability.status
-                this.metaData = availability.metaData
-            }
+            this.providerAddress = smartResponse.provider
+            this.aType = +smartResponse.aType
+            this.minDeposit = +smartResponse.minDeposit
+            this.commission = +smartResponse.commission
+            this.freeCancelDateTs = new Date(+smartResponse.freeCancelDateTs)
+            this.startDateTs = new Date(+smartResponse.startDateTs)
+            this.endDateTs = new Date(+smartResponse.endDateTs)
+            this.status = +smartResponse.availabilityStatus
+            this.metaData = smartResponse.metaDataLink
         }
     }
 
@@ -33,13 +29,13 @@ export default class Availability {
             return null
         let a = {}
         a.providerAddress = response[0]
-        a.aType = response[1].c[0]
-        a.minDeposit = response[2].c[0]
-        a.commission = response[3].c[0]
-        a.freeCancelDateTs = new Date(response[4].c[0])
-        a.startDateTs = new Date(response[5].c[0])
-        a.endDateTs = new Date(response[6].c[0])
-        const inSt = response[7].c[0]
+        a.aType = +response[1]
+        a.minDeposit = +response[2]
+        a.commission = +response[3]
+        a.freeCancelDateTs = new Date(+response[4])
+        a.startDateTs = new Date(+response[5])
+        a.endDateTs = new Date(+response[6])
+        const inSt = +response[7]
         a.status = inSt > 2 ? 0 : inSt
         a.metaData = response[8]
         return a

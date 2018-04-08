@@ -8,6 +8,7 @@ const resolveWeb3 = (resolve) => {
   if (alreadyInjected) {
     console.log(`Injected web3 detected.`)
     web3 = new Web3(web3.currentProvider)
+    console.log(web3)
   } else {
     console.log(`No web3 instance injected, using Local web3.`)
     const provider = new Web3.providers.HttpProvider(localProvider)

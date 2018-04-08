@@ -1,18 +1,18 @@
-import React from 'react';
-import Availability from '../RESimpl/Availability';
+import React from 'react'
+import Availability from '../RESimpl/Availability'
 import {
   Table,
   Card,
   Icon,
   Image,
   Button,
-} from 'semantic-ui-react';
+} from 'semantic-ui-react'
 
 export default class AvailabilityService {
-    state = {};
-    stringStatus = ["AVAILABLE", "REQUESTED", "CONFIRMED"];
-    constructor(state) {
-        this.state = state;
+    state = {}
+    stringStatus = ["AVAILABLE", "REQUESTED", "CONFIRMED"]
+    constructor(state, RES) {
+        this.state = state
     }
 
     /**
@@ -22,20 +22,26 @@ export default class AvailabilityService {
      */
     needRefresh(availabilities) {
         if (this.state.availabilities.length !== availabilities.length)
-            return true;
+            return true
         for (let i = 0; i < availabilities.length; i++) {
-            const a = new Availability(availabilities[i]);
-            if (a.equalsTo(this.state.availabilities[i]) <= 0)
-                return true;
+            const a = new Availability(availabilities[i])
+            const eq = a.equalsTo(this.state.availabilities[i])
+            if (eq === 0) {
+              return true
+            }
+            else if (eq < 0) {
+              console.log("Equality test shows that availibility is empty!")
+              return true
+            }
         }
-        return false;
+        return false
     }
 
     /**
      * return a jsx Card (semantic) based on availability
      */
     getTileFromAvailability(availability, callback) {
-       return typeof availability.providerAddress !== 'undefined' ? <Card fluid>
+      return !availability.isNullProvider(availability.providerAddress) ? <Card fluid>
                 <Image  src={availability.metaData} alt={availability.metaData} />
                 <Card.Content>
                   <Card.Header>
