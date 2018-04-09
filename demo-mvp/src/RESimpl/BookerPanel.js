@@ -1,16 +1,8 @@
-import React from 'react'
-import _ from 'lodash'
-import {
-  Grid,
-  Segment,
-  Menu,
-  Button,
-  Message,
-  Image
-} from 'semantic-ui-react'
-import gif from '../img/load.gif'
-import Availability from './Availability'
-import AvailabilityService from '../RESserv/AvailabilityService'
+import React from 'react';
+import _ from 'lodash';
+import { Grid, Segment, Menu, Button } from 'semantic-ui-react';
+import Availability from './Availability';
+import AvailabilityService from '../RESserv/AvailabilityService';
 
 /**
  * Main class to provide functions to display all
@@ -18,22 +10,18 @@ import AvailabilityService from '../RESserv/AvailabilityService'
  */
 class BookerPanel extends React.Component {
   constructor(props, context) {
-    super(props, context)
+    super(props, context);
     console.log("Blockchain Booking Protocol: ", props)
     this.state = {
-      loaded: false,
-      info: 'Information panel',
-      statusEnum: ["AVAILABLE", "REQUESTED", "CONFIRMED"],
       selectedBooking: 0,
-      countAvailabilities: 0,
       availability: null,
       availabilities: [],
       tiles: [],
-    }
-    this.service = new AvailabilityService(this.state)
-    this.focusAvailability = this.focusAvailability.bind(this)
-    this.displayAvailabilities = this.displayAvailabilities.bind(this)
-    this.requestReservation = this.requestReservation.bind(this)
+    };
+    this.service = new AvailabilityService(this.state);
+    this.focusAvailability = this.focusAvailability.bind(this);
+    this.displayAvailabilities = this.displayAvailabilities.bind(this);
+    this.requestReservation = this.requestReservation.bind(this);
   }
 
   /**
@@ -41,7 +29,7 @@ class BookerPanel extends React.Component {
    */
   focusAvailability(value, e) {
     this.setState({ selectedBooking: e })
-    this.getAvailability()
+    this.getAvailability();
   }
 
   /**
@@ -50,27 +38,25 @@ class BookerPanel extends React.Component {
    * in RES contract.
    */
   displayAvailabilities = async () => {
-    const { RES } = this.props
-    const service = new AvailabilityService(this.state)
-    let tmpAvailabilities = []
-    const AvailabilityNumber = await RES.getAvailabilityNumber.call()
-    this.setState({ countAvailabilities: AvailabilityNumber.c[0] })
-    var tiles = []
+    const { RES } = this.props;
+    const service = new AvailabilityService(this.state);
+    let tmpAvailabilities = [];
+    const AvailabilityNumber = await RES.getAvailabilityNumber.call();
+    var tiles = [];
     for (var i = 0; i < AvailabilityNumber.c[0]; i++) {
-      let it = i
-      const smartResponse = await RES.getAvailability(i)
-      const availability = new Availability(smartResponse)
+      let it = i;
+      const smartResponse = await RES.getAvailability(i);
+      const availability = new Availability(smartResponse);
       if (availability.isNullProvider() === false) {
-        availability.setId(it)
-        tmpAvailabilities.push(availability)
-        const toPush = service.getTileFromAvailability(availability, this.focusAvailability)
-        tiles.push(toPush)
+        availability.setId(it);
+        tmpAvailabilities.push(availability);
+        const toPush = service.getTileFromAvailability(availability, this.focusAvailability);
+        tiles.push(toPush);
       }
     }
     if (service.needRefresh(tmpAvailabilities)) {
-      if (!this.state.loaded) { this.setState({ loaded: true }) }
-      this.setState({ availabilities: tmpAvailabilities })
-      this.setState({ tiles: tiles })
+      this.setState({ availabilities: tmpAvailabilities });
+      this.setState({ tiles: tiles });
     }
   }
 
@@ -92,20 +78,19 @@ class BookerPanel extends React.Component {
     const availability = new Availability(smartResponse);
     availability.setId(selectedResource);
     if (availability !== null) {
-      this.setState({ availability: availability })
-      this.setState({ info: "Availability selected" })
+      this.setState({ availability: availability });
     } else {
-      this.setState({ info: "Availability is empty. A problem occurred." })
+      alert("Availability is empty. A problem occurred.");
     }
   }
 
   /**
-   * Print the actual availability status in info
+   * Print the actual availability status in console
    */
   getReservationStatus = async () => {
     const { accounts, RES } = this.props
     const response = await RES.getReservationStatus(localStorage.getItem('ressourceId'), { from: accounts[0] })
-    this.setState({ info: "Selected availability status: " + this.state.statusEnum[response.c[0]] })
+    console.log("getReservationStatus: ", response.c[0]);
   }
 
   /**
@@ -117,65 +102,46 @@ class BookerPanel extends React.Component {
   requestReservation = async () => {
     const { accounts, RES, BTU } = this.props
     const selectedResource = this.state.selectedBooking
-    const availability = this.state.availabilities[selectedResource]
-    console.log("accounts[0] = " + accounts[0])
-    let bookerBalance = await BTU.methods.balanceOf(accounts[0]).call()
-    if (bookerBalance < availability.minDeposit) {
-      this.setState({ info: "Not enough BTU funds for deposit [" + bookerBalance + "]" })
-      return
-    }
-    await BTU.methods.approve(RES.address, availability.minDeposit).send({ from: accounts[0], gas: 120000 })
+    const availability = this.state.availabilities[selectedResource];
+    console.log("selected availability: " + availability.toString());
+    await BTU.approve(RES.address, availability.minDeposit, {from: accounts[0], gas: 120000});
     const response = await RES.requestReservation(selectedResource, { from: accounts[0], gas: 120000 })
-    this.setState({ info: "request reservation: " + response })
+    console.log("request reservation: ", response);
   }
 
   /**
    * View rendering
    */
   render() {
-    const { accounts } = this.props
-    let tilesCount = this.state.tiles.length
-    let rows = 1
-    const tilesByRow = 3
+    let tilesCount = this.state.tiles.length;
+    let rows = 1;
+    const tilesByRow = 3;
     if (tilesCount >= tilesByRow) {
-      rows = (tilesCount % tilesByRow) === 0 ? tilesCount / tilesByRow : (tilesCount / tilesByRow) + 1
+      rows = (tilesCount % tilesByRow) === 0 ? tilesCount / tilesByRow : (tilesCount / tilesByRow) + 1;
     }
     const tileGrid = _.times(rows, i => (
       <Grid.Row key={i}>
-          <Grid.Column textAlign="center"><Segment>{this.state.tiles[i*tilesByRow]}</Segment></Grid.Column>
-          <Grid.Column textAlign="center"><Segment>{this.state.tiles[i*tilesByRow+1]}</Segment></Grid.Column>
-          <Grid.Column textAlign="center"><Segment>{this.state.tiles[i*tilesByRow+2]}</Segment></Grid.Column>
+        <Grid.Column><Segment>{this.state.tiles[i*tilesByRow]}</Segment></Grid.Column>
+        <Grid.Column><Segment>{this.state.tiles[i*tilesByRow+1]}</Segment></Grid.Column>
+        <Grid.Column><Segment>{this.state.tiles[i*tilesByRow+2]}</Segment></Grid.Column>
       </Grid.Row>
     ))
-    let displayer = <Image alt="loading..." src={gif} size='mini' />
-    if (this.state.loaded) {
-      displayer = <Message>
-                    <Message.Header>{this.state.info}</Message.Header>
-                    <Message.Item>Connected account: {accounts[0]}</Message.Item>
-                    <Message.Item>There is {this.state.countAvailabilities} availabilities on the network</Message.Item>
-                  </Message>
-    }
     return (
       <div>
-        <h1>All providers availabilities</h1>
-        <h3>Selected availability: {this.state.availability === null ? "-" : this.state.selectedBooking}</h3>
-        <div>
-          {displayer}
-        </div>
-        <Grid stackable columns={1}>
+        <h1>All providers publications</h1>
+        <h3>Selected booking: {this.state.availability === null ? "-" : this.state.selectedBooking}</h3>
+        <Grid stackable columns={2}>
           <Grid.Row>
             <Grid.Column width={4}>
               <Segment>
                 <Menu vertical secondary>
-                  <Menu.Item fitted='vertically'>
-                    <Button fluid color="violet" onClick={this.requestReservation} disabled={this.state.availability === null}>Reserve</Button>
-                  </Menu.Item>
-                  <Menu.Item fitted='vertically'>
-                    <Button fluid color="purple" onClick={this.getReservationStatus} disabled={this.state.availability === null}>See Status</Button>
-                  </Menu.Item>
-                  <Menu.Item fitted='vertically'>
-                    <Button fluid color="green" onClick={this.getBtu}>Get 5 BTU</Button>
-                  </Menu.Item>
+                  {/*
+                  <Menu.Item as="button" name='Info' active={this.state.slideIndex === 0} onClick={this.getAvailability} />
+                  <Menu.Item name='Status' active={this.state.slideIndex === 1} onClick={this.getReservationStatus} />
+                  */}
+                    <Menu.Item>
+                      <Button color="violet" onClick={this.requestReservation} disabled={this.state.availability === null}>Request Reservation</Button>
+                    </Menu.Item>
                 </Menu>
               </Segment>
             </Grid.Column>
@@ -192,4 +158,4 @@ class BookerPanel extends React.Component {
     )
   }
 }
-export default BookerPanel
+export default BookerPanel;
