@@ -27,10 +27,8 @@ const NavBarChildren = ({ children }) => (
 );
 
 class NavBar extends Component {
-  
   render() {
     const { children } = this.props;
-
     return (
       <div>
         <Responsive minWidth={Responsive.onlyTablet.minWidth}>
@@ -41,5 +39,4 @@ class NavBar extends Component {
     );
   }
 }
-
 export default NavBar;
