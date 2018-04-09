@@ -11,7 +11,7 @@ class Publish extends React.Component {
         this.state = {
             info: 'Information panel',
             aType: 0,
-            minDeposit: 1,
+            minDeposit: 4,
             commission: 2,
             freeCancelDateTs: new Date().getTime(),
             freeCancelDate: moment(),
