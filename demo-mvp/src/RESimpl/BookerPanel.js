@@ -118,12 +118,13 @@ class BookerPanel extends React.Component {
     const { accounts, RES, BTU } = this.props
     const selectedResource = this.state.selectedBooking
     const availability = this.state.availabilities[selectedResource]
-    const bookerBalance = await BTU.balanceOf(accounts[0])
+    console.log("accounts[0] = " + accounts[0])
+    let bookerBalance = await BTU.methods.balanceOf(accounts[0]).call()
     if (bookerBalance < availability.minDeposit) {
-      this.setState({ info: "Not enought BTU funds for deposit" })
+      this.setState({ info: "Not enough BTU funds for deposit [" + bookerBalance + "]" })
       return
     }
-    await BTU.approve(accounts[0], availability.minDeposit, { from: RES.address, gas: 120000 })
+    await BTU.methods.approve(RES.address, availability.minDeposit).send({ from: accounts[0], gas: 120000 })
     const response = await RES.requestReservation(selectedResource, { from: accounts[0], gas: 120000 })
     this.setState({ info: "request reservation: " + response })
   }

@@ -56,7 +56,7 @@ class ProviderPanel extends React.Component {
       const smartResponse = await RES.getAvailability(it)
       const availability = new Availability(smartResponse)
       availability.setId(it)
-      if (availability.providerAddress.toUpperCase() === accounts[0].toUpperCase()) {
+      if (availability.providerAddress == accounts[0]) {
         tmpAvailabilities.push(availability)
         const toPush = service.getTileFromAvailability(availability, this.focusAvailability)
         tiles.push(toPush)

@@ -24,7 +24,7 @@ module.exports = {
         },
         port: 443,
         network_id: "3",
-        gas: 1471238          // Standard gas limit
+        gas: 3500000
     }
   }
 };
