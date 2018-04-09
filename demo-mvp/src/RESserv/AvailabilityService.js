@@ -35,13 +35,12 @@ export default class AvailabilityService {
      * return a jsx Card (semantic) based on availability
      */
     getTileFromAvailability(availability, callback) {
-       return typeof availability.providerAddress !== 'undefined' ? <Card fluid>
+       return typeof availability.providerAddress !== 'undefined' ? <Card>
                 <Image  src={availability.metaData} alt={availability.metaData} />
                 <Card.Content>
                   <Card.Header>
                     { "Resource " + availability.resourceId }
                     <p>{ "Provided by " + availability.providerAddress.substring(0,8) + "..." }</p>
-                    <p>{ "Deposit " + availability.minDeposit + (availability.minDeposit > 1 ? " BTUs" : " BTU")}</p>
                   </Card.Header>
                   <Card.Meta>
                     <h3>Available from:</h3>
@@ -53,15 +52,19 @@ export default class AvailabilityService {
                     <h3>at</h3>
                     <p className='date'>{ availability.freeCancelDateTs.toTimeString() }</p>
                   </Card.Meta>
+                  <Card.Description>
+                      Availibility number { availability.resourceId }
+                  </Card.Description>
                 </Card.Content>
                 <Card.Content extra>
+                  <Button onClick={(e) => callback(e, availability.resourceId)} color="teal">
+                    <Icon name='pin' />{ <span>Select</span> }
+                  </Button>
+                  <br/>
                   <p>
                     <Icon name='address book outline' />
                     { <span>Status :<b>{this.stringStatus[availability.status]}</b></span> }
                   </p>
-                  <Button onClick={(e) => callback(e, availability.resourceId)} color="teal">
-                    <Icon name='pin' />{ <span>Select</span> }
-                  </Button>
                 </Card.Content>
               </Card> : <Card>
                           <Card.Content extra>
@@ -90,7 +93,7 @@ export default class AvailabilityService {
                           <Table.HeaderCell>metaData</Table.HeaderCell>
                         </Table.Row>
                       </Table.Header>;
-        if (availability !== null ) {
+        if (availability != null ) {
         return <Table celled>
                   {header}
                   <Table.Body>
