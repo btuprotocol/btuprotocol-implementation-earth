@@ -45,15 +45,15 @@ class Publish extends React.Component {
         this.setState({commission: event.target.value});
     }
     handleFreeCancelDateTsChange(date) {
-        this.setState({freeCancelDateTs: date.unix()});
+        this.setState({freeCancelDateTs: date.valueOf()});
         this.setState({freeCancelDate: date});
     }
     handleStartDateTsChange(date) {
-        this.setState({startDateTs: date.unix()});
+        this.setState({startDateTs: date.valueOf()});
         this.setState({startDate: date});
     }
     handleEndDateTsChange(date) {
-        this.setState({endDateTs: date.unix()});
+        this.setState({endDateTs: date.valueOf()});
         this.setState({endDate: date});
     }
     handleStatusChange(event) {

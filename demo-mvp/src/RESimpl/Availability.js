@@ -1,6 +1,6 @@
 export default class Availability {
     resourceId;
-    providerAddress;
+    provider;
     aType;
     minDeposit;
     commission;
@@ -14,8 +14,8 @@ export default class Availability {
         if (smartResponse !== null) {
             const availability = (typeof smartResponse[1] !== 'undefined' && typeof smartResponse[1].c !== 'undefined') ?
                 this.responseToAvailability(smartResponse) : smartResponse;
-            if (availability !== null && typeof availability.providerAddress !== 'undefined') {
-                this.providerAddress = availability.providerAddress;
+            if (availability !== null && typeof availability.provider !== 'undefined') {
+                this.provider = availability.provider;
                 this.aType = availability.aType;
                 this.minDeposit = availability.minDeposit;
                 this.commission = availability.commission;
@@ -32,7 +32,7 @@ export default class Availability {
         if (response === null || this.isNullProvider(response[0]))
             return null;
         let a = {};
-        a.providerAddress = response[0];
+        a.provider = response[0];
         a.aType = response[1].c[0];
         a.minDeposit = response[2].c[0];
         a.commission = response[3].c[0];
@@ -50,11 +50,9 @@ export default class Availability {
     }
 
     equalsTo(availability) {
-        if (availability === null || typeof availability.resourceId === 'undefined')
-            return -1;
         let check = true;
         check = check && availability.resourceId === this.resourceId;
-        check = check && availability.providerAddress === this.providerAddress;
+        check = check && availability.provider === this.provider;
         check = check && availability.aType === this.aType;
         check = check && availability.minDeposit === this.minDeposit;
         check = check && availability.commission === this.commission;
@@ -67,7 +65,7 @@ export default class Availability {
     }
 
     toString() {
-        return "\nProvider node address: " + this.providerAddress +
+        return "\nProvider node address: " + this.provider +
             "\nResource id: " + this.resourceId +
             "\nResource type: " + this.aType +
             "\nMinimum Deposit: " + this.minDeposit +
@@ -79,12 +77,15 @@ export default class Availability {
             "\n Metadata to offchain implementation example: " + this.metaData
     }
 
-    isNullProvider(providerAddress) {
-        if (providerAddress === null) {
-            providerAddress = this.providerAddress;
-        }
-        let check = (providerAddress === "0x0000000000000000000000000000000000000000");
-        check = check || providerAddress === null;
-        return check;
+    isRequested() {
+        return this.status === 1
+    }
+
+    isCompleted() {
+        return this.provider === "0x0000000000000000000000000000000000000000"
+    }
+
+    isNullProvider() {
+        return this.provider === null ||typeof this.provider === 'undefined'
     }
 }
