@@ -1,0 +1,5 @@
+
+0xc955F5eD5244fe0B273E67fd0928706C69062105,
+0x4f6946A4Be8c72CE169540411f899555c4b78406,
+
+Replace by addresses of your own, delete this line, launch ropsten.sh or local.sh depending your context
