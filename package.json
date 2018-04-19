@@ -1,0 +1,32 @@
+{
+  "name": "demo-mvp-btuprotocol-with-context",
+  "version": "0.1.0",
+  "private": true,
+  "dependencies": {
+    "react": "^16.2.0",
+    "react-bootstrap": "^0.32.1",
+    "react-dom": "^16.2.0",
+    "react-scripts": "1.1.1",
+    "react-swipeable-views": "^0.12.12",
+    "react-datepicker": "^1.2.2",
+    "moment": "^2.21.0",
+    "semantic-ui-css": "^2.3.1",
+    "semantic-ui-react": "^0.79.0",
+    "truffle-hdwallet-provider": "0.0.3",
+    "truffle-contract": "^3.0.3",
+    "web3": "1.0.0-beta.33",
+    "chai": "^4.1.2",
+    "testrpc": "^0.0.1",
+    "zeppelin-solidity": "^1.7.0"
+  },
+  "devDependencies": {
+    "mocha": "^5.0.1"
+  },
+  "scripts": {
+    "setup_local": "setup.sh",
+    "start": "cd demo-mvp && npm run start",
+    "build": "cd demo-mvp && react-scripts build",
+    "test": "cd demo-mvp && react-scripts test --env=jsdom",
+    "eject": "cd demo-mvp && react-scripts eject"
+  }
+}

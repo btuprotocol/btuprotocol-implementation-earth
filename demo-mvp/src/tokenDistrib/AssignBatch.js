@@ -35,14 +35,17 @@ try {
     process.exit(3)
 }
 
-const BTUTokenSale = require('../src/BTU/BTUTokenSale')
-const BTU = require('../src/BTU/BTU')
+const BTUTokenSale = require('../BTU/BTUTokenSale')
+const BTU = require('../BTU/BTU')
 
 // Relying on third argument, define the web3 provider
 var HDWalletProvider = require("truffle-hdwallet-provider")
 var mnemonic = "impact stay fish oil hover solar excess monster output fence razor celery"
+
+const Web3 = require('web3');
+var web3 = new Web3();
 var provider = (local !== 'undefined' && local == 'true') ?
-    new Web3.providers.HttpProvider('http://localhost:9545') :
+    new web3.providers.HttpProvider('http://localhost:9545') :
     new HDWalletProvider(mnemonic, "https://ropsten.infura.io/DYBja4A1RKCdnSP4DMYt")
 web3.setProvider(provider)
 

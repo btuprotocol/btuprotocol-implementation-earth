@@ -41,14 +41,19 @@ type ganache-cli >/dev/null 2>&1 || {
     esac
 }
 
+# install dependencies globally
+echo "Installing global dependencies, could take a while..."
+npm install
+# then deploy dApp locally
+cd demo-mvp
 # launch a local blockchain context using customRPC
 (ganache-cli -p 9545 -m 'candy maple cake sugar pudding cream honey rich smooth crumble sweet treat' >> customRPC.log 2>> customRPC_error.log) & customRPC=$!
 # compile and deploy contracts
-echo 'Wait for BTU setup, compilation and migration, it could take a while...'
+echo 'Wait for BTU compilation and migration, just few seconds'
 ./compile_contract.sh ../BTUToken/ & btuCompilation=$!
 wait $btuCompilation
 btuCompilResult=$?
-echo 'Wait for RES setup, compilation and migration, it could take a while...'
+echo 'Wait for RES compilation and migration, just few seconds'
 ./compile_contract.sh ../RES/ & resCompilation=$!
 wait $resCompilation
 resCompilResult=$?
@@ -68,7 +73,5 @@ cp -rf ../BTUToken/build/contracts/BTUTokenSale.json src/BTU/
 cp -rf ../BTUToken/build/contracts/BTU.json src/BTU/
 cp -rf ../RES/build/contracts/RES.json src/RES/
 echo "Local ABIs copied in dApp"
-echo "Running npm install"
-npm install;
-echo 'DONE'
+echo "You can start the demo connecting your eth client to custom RPC localhost:9545"
 wait $customRPC

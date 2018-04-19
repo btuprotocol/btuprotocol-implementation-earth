@@ -7,7 +7,6 @@ import {
   Message,
   Image,
   Tab,
-  Segment,
   Transition
 } from 'semantic-ui-react'
 import gif from '../img/load.gif'

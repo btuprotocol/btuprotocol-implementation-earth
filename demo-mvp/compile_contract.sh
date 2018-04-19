@@ -6,7 +6,6 @@ if [ $# -ne 1 ] || [ ! -d "$1" ]; then
 fi
 
 cd "$1"
-npm install
 truffle compile
 echo "Compilation ok"
 truffle migrate --reset

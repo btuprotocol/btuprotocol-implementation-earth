@@ -34,5 +34,3 @@ This script will do several things:
 
    *****dApp will run on [http://localhost:3000](http://localhost:3000)*****
    *****See dApp tutorial to setup an ethereum client*****
-
-###Content

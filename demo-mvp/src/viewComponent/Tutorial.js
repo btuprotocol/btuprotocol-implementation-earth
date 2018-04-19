@@ -20,6 +20,7 @@ import available from '../img/availability_available.png'
 import fiveTokens from '../img/accountWithFive.png'
 import requested from '../img/requested.png'
 import providerRequested from '../img/provider_requested.png'
+import BTUts from '../img/btuTokenSaleAddr.png'
 
 class Tutorial extends React.Component {
   state = { activeIndex: 0 }
@@ -111,13 +112,32 @@ class Tutorial extends React.Component {
                           </Grid.Column>
                           <Grid.Column width={5}>
                             <Message color="grey" size="large">
-                              <Message.Header>Get some BTU</Message.Header>
+                              <Message.Header>Get some BTU on ropsten</Message.Header>
                               <p>
                                 This is the tricky part.. <br/>If you are testing alone, you need at list two accounts with BTU.<br/>
                               </p>
                             </Message>
                           </Grid.Column>
                           <Grid.Column width={9} textAlign="center" verticalAlign="middle">
+                            <Image src={assign} alt='assign' size='huge' centered/>
+                          </Grid.Column>
+                        </Grid.Row>
+                        <Grid.Row divided>
+                          <Grid.Column width={4}>
+                            <Image src={BTUts} alt='BTUTokenSale addr' size='medium' floated='left' wrapped />
+                          </Grid.Column>
+                          <Grid.Column width={4}>
+                            <Message color="grey" size="large">
+                              <Message.Header>Get some BTU on custom RPC</Message.Header>
+                              <p>
+                                You must copy the BTUTokenSale address
+                                (should appear on booker and provider information panels, logged during build and in browser console)
+                                And call ./local.sh [BTUTokenSale address] in demo-mvp folder.
+                                It will provide all local accounts.
+                              </p>
+                            </Message>
+                          </Grid.Column>
+                          <Grid.Column width={8} textAlign="center" verticalAlign="middle">
                             <Image src={assign} alt='assign' size='huge' centered/>
                           </Grid.Column>
                         </Grid.Row>

@@ -1,3 +1,3 @@
 #!/bin/bash
 
-node ./src/tokenDistrib/AssignBatch.js ./batch.txt "$1"
+node src/tokenDistrib/AssignBatch.js ./local_batch.txt "$1" true
