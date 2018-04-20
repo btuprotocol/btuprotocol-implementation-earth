@@ -54,7 +54,7 @@ web3.eth.net.isListening().then(function (res) {
 })
 
 let btuTokenSale = new web3.eth.Contract(BTUTokenSale.abi, tokenSaleAddress)
-console.log("BTUTokenSale address = " + BTUTokenSale.address)
+console.log("BTUTokenSale address = " + btuTokenSale.address)
 
 console.log("Accounts: \n" + batchFileData.join('\n'))
 let addresses = []

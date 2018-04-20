@@ -3,14 +3,14 @@
 # clean setup at end of process
 clean () {
     echo "Cleaning local ABIs"
-    rm src/BTU/BTU.json
-    rm src/BTU/BTUTokenSale.json
-    rm src/RES/RES.json
-    cp src/BTUsave/BTU.json src/BTU/BTU.json
-    mv src/BTUsave/BTUTokenSale.json src/BTU/BTUTokenSale.json
-    mv src/RESsave/RES.json src/RES/RES.json
-    rm -r src/BTUsave/
-    rm -r src/RESsave/
+    rm "$demomvp/src/BTU/BTU.json"
+    rm "$demomvp/src/BTU/BTUTokenSale.json"
+    rm "$demomvp/src/RES/RES.json"
+    cp "$demomvp/src/BTUsave/BTU.json" "$demomvp/src/BTU/BTU.json"
+    mv "$demomvp/src/BTUsave/BTUTokenSale.json" "$demomvp/src/BTU/BTUTokenSale.json"
+    mv "$demomvp/src/RESsave/RES.json" "$demomvp/src/RES/RES.json"
+    rm -r "$demomvp/src/BTUsave/"
+    rm -r "$demomvp/src/RESsave/"
     if [ -n "$customRPC" ] && ps -p $customRPC > /dev/null; then
         kill -s 9 $customRPC
     fi
@@ -42,19 +42,23 @@ type ganache-cli >/dev/null 2>&1 || {
 }
 
 # install dependencies globally
+root=$PWD
+echo "Working Dir: $root"
 echo "Installing global dependencies, could take a while..."
 npm install
 # then deploy dApp locally
 cd demo-mvp
+demomvp=$PWD
+echo "demo-mvp path: $demomvp"
 # launch a local blockchain context using customRPC
 (ganache-cli -p 9545 -m 'candy maple cake sugar pudding cream honey rich smooth crumble sweet treat' >> customRPC.log 2>> customRPC_error.log) & customRPC=$!
 # compile and deploy contracts
 echo 'Wait for BTU compilation and migration, just few seconds'
-./compile_contract.sh ../BTUToken/ & btuCompilation=$!
+./compile_contract.sh "$root/BTUToken/" & btuCompilation=$!
 wait $btuCompilation
 btuCompilResult=$?
 echo 'Wait for RES compilation and migration, just few seconds'
-./compile_contract.sh ../RES/ & resCompilation=$!
+./compile_contract.sh "$root/RES/" & resCompilation=$!
 wait $resCompilation
 resCompilResult=$?
 if [ $btuCompilResult -ne 0 ] && [ $resCompilResult -ne 0 ]; then
@@ -63,15 +67,15 @@ if [ $btuCompilResult -ne 0 ] && [ $resCompilResult -ne 0 ]; then
 fi
 
 # Save ropsten abi to avoid reset the local repo to switch context
-mkdir src/BTUsave
-mkdir src/RESsave
-mv src/BTU/BTU.json src/BTUsave/BTU.json
-mv src/BTU/BTUTokenSale.json src/BTUsave/BTUTokenSale.json
-mv src/RES/RES.json src/RESsave/RES.json
+mkdir "$demomvp/src/BTUsave"
+mkdir "$demomvp/src/RESsave"
+mv "$demomvp/src/BTU/BTU.json" "$demomvp/src/BTUsave/BTU.json"
+mv "$demomvp/src/BTU/BTUTokenSale.json" "$demomvp/src/BTUsave/BTUTokenSale.json"
+mv "$demomvp/src/RES/RES.json" "$demomvp/src/RESsave/RES.json"
 echo "Ropsten ABIs saved"
-cp -rf ../BTUToken/build/contracts/BTUTokenSale.json src/BTU/
-cp -rf ../BTUToken/build/contracts/BTU.json src/BTU/
-cp -rf ../RES/build/contracts/RES.json src/RES/
+cp -rf "$root/BTUToken/build/contracts/BTUTokenSale.json" "$demomvp/src/BTU/"
+cp -rf "$root/BTUToken/build/contracts/BTU.json" "$demomvp/src/BTU/"
+cp -rf "$root/RES/build/contracts/RES.json" "$demomvp/src/RES/"
 echo "Local ABIs copied in dApp"
 echo "You can start the demo connecting your eth client to custom RPC localhost:9545"
 wait $customRPC
