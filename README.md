@@ -43,7 +43,7 @@ This script will do several things:
 
     npm install
 
-### <a name="da"></a>Run dApp
+### <a name="rd"></a>Run dApp
 
 
     npm run start
@@ -56,7 +56,8 @@ This script will do several things:
 
 ***A booker panel allow to consult and reserve resources***
 
-
+![booker_panel](https://image.ibb.co/dSRnpH/booker_panel.png "Screenshot of the booker panel")
 
 ***A provider panel allow to add a resource to the BTU ecosystem***
 
+![provider_panel](https://image.ibb.co/deWnpH/provider_panel.png "Screenshot of the provider panel")
