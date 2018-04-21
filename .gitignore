@@ -1,1 +1,5 @@
-RES/node_modules/.bin/_mocha
+RES/node_modules/
+demo-mvp/customRPC_error.log
+demo-mvp/customRPC.log
+node_modules/
+RES/build/

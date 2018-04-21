@@ -4,6 +4,7 @@ import getAccounts from './getAccounts'
 import getContract from './getContract'
 import RESabstraction from '../RES/RES.json'
 import BTUabstraction from '../BTU/BTU.json'
+import BTUTokenSaleabstraction from '../BTU/BTUTokenSale.json'
 
 export default class Web3Container extends React.Component {
   state = { web3: null, accounts: null, RES: null, BTU: null }
@@ -12,11 +13,22 @@ export default class Web3Container extends React.Component {
     try {
       const web3 = await getWeb3()
       const accounts = await getAccounts(web3)
-      const BTU = await getContract(web3, BTUabstraction)
+      if (typeof accounts[0] === 'undefined' || accounts[0] === null) {
+        throw new Error('Ethreum account not found. Connect throught metamask, see tutorial', 'Web3Container.js', 16)
+      }
+      const BTUTokenSale = await getContract(web3, BTUTokenSaleabstraction)
       const RES = await getContract(web3, RESabstraction)
+      const btuAddress = await BTUTokenSale.btuToken.call()
+      console.log('BTUTokenSale address = ' + BTUTokenSale.address)
+      console.log('BTU address = ' + btuAddress)
+      const BTU = new web3.eth.Contract(BTUabstraction.abi, btuAddress)
+      BTU.methods.balanceOf(accounts[0]).call(function(err, res) {
+          console.log("You BTU balance = " + res)
+      });
+      BTU.address = btuAddress
+      BTU.BTUts = BTUTokenSale.address
       this.setState({ web3, accounts, RES, BTU })
     } catch (error) {
-      alert(`Failed to load web3, accounts, or contract. Check console for details.`)
       console.log(error)
     }
   }

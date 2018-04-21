@@ -10,8 +10,8 @@ class Publish extends React.Component {
         super(props, context);
         this.state = {
             aType: 0,
-            minDeposit: 1,
-            commission: 2,
+            minDeposit: 2,
+            commission: 1,
             freeCancelDateTs: new Date().getTime(),
             freeCancelDate: moment(),
             startDateTs: new Date().getTime(),
@@ -45,15 +45,15 @@ class Publish extends React.Component {
         this.setState({commission: event.target.value});
     }
     handleFreeCancelDateTsChange(date) {
-        this.setState({freeCancelDateTs: date.unix()});
+        this.setState({freeCancelDateTs: date.valueOf()});
         this.setState({freeCancelDate: date});
     }
     handleStartDateTsChange(date) {
-        this.setState({startDateTs: date.unix()});
+        this.setState({startDateTs: date.valueOf()});
         this.setState({startDate: date});
     }
     handleEndDateTsChange(date) {
-        this.setState({endDateTs: date.unix()});
+        this.setState({endDateTs: date.valueOf()});
         this.setState({endDate: date});
     }
     handleStatusChange(event) {
@@ -71,7 +71,7 @@ class Publish extends React.Component {
         const { accounts, RES } = this.props
         const response = await RES.publishAvailability(
             this.state.aType,
-            this.state.minDeposit,
+            this.state.minDeposit * Math.pow(10, 18),
             this.state.commission,
             this.state.freeCancelDateTs,
             this.state.startDateTs,
@@ -88,9 +88,9 @@ class Publish extends React.Component {
     render() {
         const { accounts, RES, BTU } = this.props
         return (
-            <Grid stackable columns={2}>
+            <Grid stackable columns={16}>
                 <Grid.Row>
-                    <Grid.Column>
+                    <Grid.Column width={6}>
                         <Segment>
                             <Form onSubmit={this.publish} width='equals' size='large'>
                                 <Form.Input
@@ -167,7 +167,7 @@ class Publish extends React.Component {
                         </Form>
                     </Segment>
                 </Grid.Column>
-                <Grid.Column>
+                <Grid.Column width={10}>
                     <Segment>
                         <div>
                             <ProviderPanel accounts={accounts} RES={RES} BTU={BTU} />
