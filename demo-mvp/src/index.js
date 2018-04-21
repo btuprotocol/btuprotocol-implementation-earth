@@ -53,7 +53,9 @@ class Index extends Component {
                         </div>
                         <div style={styles.slide}>
                         <Web3Container
-                            renderLoading={() => <div>Loading dApp, see tutorial if nothing happen...</div>}
+                            renderLoading={() => <div>Loading dApp, see tutorial if nothing happen
+                                                    <Image centered alt="loading..." src={gif} size='mini' />
+                                                </div>}
                             render={({ accounts, RES, BTU }) => (
                             <div>
                                 <Publish accounts={accounts} RES={RES} BTU={BTU} />

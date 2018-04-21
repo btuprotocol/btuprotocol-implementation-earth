@@ -21,6 +21,9 @@ import fiveTokens from '../img/accountWithFive.png'
 import requested from '../img/requested.png'
 import providerRequested from '../img/provider_requested.png'
 import BTUts from '../img/btuTokenSaleAddr.png'
+import customRPC from '../img/customRPC.png'
+import customRPCconfig from '../img/customRPCconfig.png'
+import assignLocally from '../img/assignLocally.png'
 
 class Tutorial extends React.Component {
   state = { activeIndex: 0 }
@@ -33,14 +36,82 @@ class Tutorial extends React.Component {
   }
   render() {
     const { activeIndex } = this.state
+    const setupPanels = [
+      {
+        title: "Setup on custom RPC",
+        content: {
+          content: <Grid columns={16} verticalAlign="middle" padded="horizontally" centered divided>
+                    <Grid.Row>
+                      <Grid.Column width={2}>
+                        <Image src={customRPC} alt='metamask connect to customRPC' size='medium' floated='left' wrapped />
+                      </Grid.Column>
+                      <Grid.Column width={6}>
+                        <Message color="blue" size="large">
+                          <Message.Header>Go to customRPC</Message.Header>
+                            <p>Click on the top left corner to select Custom RPC</p>
+                          </Message>
+                      </Grid.Column>
+                      <Grid.Column width={2}>
+                        <Image src={customRPCconfig} alt='Config custom RPC' size='medium' floated='left' wrapped />
+                      </Grid.Column>
+                      <Grid.Column width={6}>
+                        <Message color="grey" size="large">
+                          <Message.Header>
+                            Define a connection to custom RPC
+                          </Message.Header>
+                            <p>
+                              The ganache-cli test RPC should run on 9545 after local setup.
+                              So you should type http://localhost:9545 and click save. It should refresh the app.
+                            </p>
+                          </Message>
+                        </Grid.Column>
+                      </Grid.Row>
+                    </Grid>,
+          key: 'Local'
+        }
+      },
+      {
+        title: "Setup on Ropsten",
+        content: {
+          content: <Grid columns={16} verticalAlign="middle" padded="horizontally" centered divided>
+                      <Grid.Row>
+                        <Grid.Column width={2}>
+                          <Image src={metaToRopsten} alt='metamask connect to ropsten' size='medium' floated='left' wrapped />
+                        </Grid.Column>
+                        <Grid.Column width={6}>
+                          <Message color="blue" size="large">
+                            <Message.Header>Connect to ropsten</Message.Header>
+                              <p>Click on the top left corner to select the Ropsten network. It should refresh the app.</p>
+                            </Message>
+                        </Grid.Column>
+                        <Grid.Column width={2}>
+                          <Image src={metaCopyClip} alt='Copy address to clipboard' size='medium' floated='left' wrapped />
+                        </Grid.Column>
+                        <Grid.Column width={6}>
+                          <Message color="grey" size="large">
+                              <Message.Header>
+                                Obtain ether
+                              </Message.Header>
+                              <p>
+                                Copy your account address and go to _ <a target="_blank" rel="noopener noreferrer" href="http://faucet.ropsten.be:3001/">ropsten faucet</a> _ to obtain some ether
+                              </p>
+                          </Message>
+                        </Grid.Column>
+                      </Grid.Row>
+                    </Grid>,
+          key: 'Ropsten'
+        }
+      },
+    ]
     return (<Accordion>
                   <Accordion.Title active={activeIndex === 0} index={0} onClick={this.handleClick}>
                     <Icon name='dropdown' />
-                    Connect <a target="_blank" rel="noopener noreferrer" href="https://metamask.io">Metamask</a> to ropsten and get some ether
+                    Connect <a target="_blank" rel="noopener noreferrer" href="https://metamask.io">Metamask</a> to your network
                   </Accordion.Title>
                   <Accordion.Content active={activeIndex === 0}>
                     <Grid columns={16} verticalAlign="middle" padded="horizontally" centered divided>
                       <Grid.Row divided>
+                        <Grid.Column width={2}></Grid.Column>
                         <Grid.Column width={2}>
                           <Image src={metamaskLogo} alt='metamask logo' size='medium' floated='left' wrapped />
                         </Grid.Column>
@@ -49,35 +120,19 @@ class Tutorial extends React.Component {
                             <Message.Header>Setup <a rel="noopener noreferrer" target="_blank" href="https://metamask.io/">Metamask</a></Message.Header>
                             <p>
                               Welcome on this demo application implementing BTU protocol.<br/>
-                              The first step to enjoy the workflow is to configure your ethereum client
+                              The first step to enjoy the workflow is to configure your ethereum client.
+                              At this point, your dApp can embed two kind of ABI (smart contract representation)
+                              ropsten or locally build smart contract depending on how you setup the app.
+                              If you launched a local customRPC by running ./setup.sh, follow customRPC guidelines.
+                              If you just ran npm install, connect to ropsten.
                             </p>
-                          </Message>
-                        </Grid.Column>
-                        <Grid.Column width={2}>
-                          <Image src={metaToRopsten} alt='metamask connect to ropsten' size='medium' floated='left' wrapped />
-                        </Grid.Column>
-                        <Grid.Column width={6}>
-                          <Message color="blue" size="large">
-                            <Message.Header>Connect to ropsten</Message.Header>
-                            <p>Click on the top left corner to select the Ropsten network</p>
                           </Message>
                         </Grid.Column>
                       </Grid.Row>
-                      <Divider section />
-                      <Grid.Row divided>
-                        <Grid.Column width={2}>
-                          <Image src={metaCopyClip} alt='Copy address to clipboard' size='medium' floated='left' wrapped />
-                        </Grid.Column>
-                        <Grid.Column width={6}>
-                          <Message color="grey" size="large">
-                            <Message.Header>
-                              Obtain ether
-                            </Message.Header>
-                            <p>
-                              Copy your account address and go to _ <a target="_blank" rel="noopener noreferrer" href="http://faucet.ropsten.be:3001/">ropsten faucet</a> _ to obtain some ether
-                            </p>
-                          </Message>
-                        </Grid.Column>
+                      <Accordion.Accordion panels={setupPanels} />
+                      <Divider hidden section />
+                      <Grid.Row>
+                        <Grid.Column width={2}></Grid.Column>
                         <Grid.Column width={2}>
                           <Image src={metaAddToken} alt='Add BTU token to metamask' size='medium' floated='left' wrapped />
                         </Grid.Column>
@@ -87,9 +142,12 @@ class Tutorial extends React.Component {
                               Add BTU token to metamask
                             </Message.Header>
                             <p>
-                              To properly follow token movements, click on metamask 'token' panel and add the following address: <br/>
+                              To properly follow token movements, click on metamask 'token' panel and add the following address for ropsten: <br/>
                             </p>
-                            <pre>0x141227d8fcc34fd830553cf6a3a3078de8d97e25</pre>
+                            <pre> 0x141227d8fcc34fd830553cf6a3a3078de8d97e25</pre>
+                            <p>
+                              For a custom RPC, use the BTU address displayed in information panel<br/>
+                            </p>
                           </Message>
                         </Grid.Column>
                       </Grid.Row>
@@ -102,55 +160,69 @@ class Tutorial extends React.Component {
                       </Accordion.Content>
                       <Accordion.Title  active={activeIndex === 1} index={1} onClick={this.handleClick}>
                         <Icon name='dropdown' />
-                        Get some BTU
+                        Get some BTU on local customRPC
                       </Accordion.Title>
                       <Accordion.Content active={activeIndex === 1}>
-                      <Grid columns={16} verticalAlign="middle" padded="horizontally" centered divided>
-                        <Grid.Row divided>
-                          <Grid.Column width={2}>
-                            <Image src={btuLogo} alt='BTU logo' size='medium' floated='left' wrapped />
-                          </Grid.Column>
-                          <Grid.Column width={5}>
-                            <Message color="grey" size="large">
-                              <Message.Header>Get some BTU on ropsten</Message.Header>
-                              <p>
-                                This is the tricky part.. <br/>If you are testing alone, you need at list two accounts with BTU.<br/>
-                              </p>
-                            </Message>
-                          </Grid.Column>
-                          <Grid.Column width={9} textAlign="center" verticalAlign="middle">
-                            <Image src={assign} alt='assign' size='huge' centered/>
-                          </Grid.Column>
-                        </Grid.Row>
-                        <Grid.Row divided>
-                          <Grid.Column width={4}>
-                            <Image src={BTUts} alt='BTUTokenSale addr' size='medium' floated='left' wrapped />
-                          </Grid.Column>
-                          <Grid.Column width={4}>
-                            <Message color="grey" size="large">
-                              <Message.Header>Get some BTU on custom RPC</Message.Header>
-                              <p>
-                                You must copy the BTUTokenSale address
-                                (should appear on booker and provider information panels, logged during build and in browser console)
-                                And call ./local.sh [BTUTokenSale address] in demo-mvp folder.
-                                It will provide all local accounts.
-                              </p>
-                            </Message>
-                          </Grid.Column>
-                          <Grid.Column width={8} textAlign="center" verticalAlign="middle">
-                            <Image src={assign} alt='assign' size='huge' centered/>
-                          </Grid.Column>
-                        </Grid.Row>
+                        <Grid>
+                          <Grid.Row divided>
+                            <Grid.Column width={4}>
+                              <Message color="grey" size="large">
+                                <Message.Header>Get some BTU on custom RPC</Message.Header>
+                                <p>
+                                  This is the tricky part..
+                                  You must copy the BTUTokenSale address
+                                  (should appear on booker and provider information panels, logged during build and in browser console)
+                                  And call
+                                </p>
+                                <pre>./local.sh [BTUTokenSale address]</pre>
+                                <p>
+                                  in demo-mvp folder.
+                                  It will provide all local accounts.
+                                </p>
+                              </Message>
+                            </Grid.Column>
+                            <Grid.Column width={4} textAlign="center" verticalAlign="middle">
+                              <Image src={BTUts} alt='assign' size='big' centered/>
+                            </Grid.Column>
+                            <Grid.Column width={8} textAlign="center" verticalAlign="middle">
+                              <Image src={assignLocally} alt='assign' size='big' centered/>
+                            </Grid.Column>
+                          </Grid.Row>
                         </Grid>
                       </Accordion.Content>
+                      <Accordion.Title  active={activeIndex === 2} index={2} onClick={this.handleClick}>
+                        <Icon name='dropdown' />
+                        Get some BTU on ropsten
+                      </Accordion.Title>
+                      <Accordion.Content active={activeIndex === 2}>
+                        <Grid columns={16} verticalAlign="middle" padded="horizontally" centered divided>
+                          <Grid.Row divided>
+                            <Grid.Column width={2}>
+                              <Image src={btuLogo} alt='BTU logo' size='medium' floated='left' wrapped />
+                            </Grid.Column>
+                            <Grid.Column width={5}>
+                              <Message color="grey" size="large">
+                                <Message.Header>Get some BTU on ropsten</Message.Header>
+                                <p>
+                                  Here we know the smart contract address, but not the address(es) you are using.
+                                  So you need to edit the file batch.txt in demo-mvp/ and launch ropsten.sh.
+                                </p>
+                              </Message>
+                            </Grid.Column>
+                            <Grid.Column width={9} textAlign="center" verticalAlign="middle">
+                              <Image src={assign} alt='assign' size='big' centered/>
+                            </Grid.Column>
+                          </Grid.Row>
+                        </Grid>
+                        </Accordion.Content>
                       {/*
                       WORKFLOW
                       */}
-                      <Accordion.Title active={activeIndex === 2} index={2} onClick={this.handleClick}>
+                      <Accordion.Title active={activeIndex === 3} index={3} onClick={this.handleClick}>
                         <Icon name='dropdown' />
                         Workflow
                       </Accordion.Title>
-                      <Accordion.Content active={activeIndex === 2}>
+                      <Accordion.Content active={activeIndex === 3}>
                         {/*
                         PUBLISH / CONSULT
                       */}
