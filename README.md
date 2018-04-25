@@ -10,8 +10,6 @@
 
 ## <a name="gr"></a>General requirements
 
-*THIS PROJECT is a POC and must not be use in production mode*
-
    -	Node.js server v8 or higher (build with v9.8.0 ) [https://nodejs.org/en/download/](https://nodejs.org/en/download/)
    -	Metamask (ethereum client) [https://metamask.io/](https://metamask.io/)
 
