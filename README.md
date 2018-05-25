@@ -19,10 +19,13 @@
 
 ## <a name="st"></a>Setup
 #### On windows:
+*****You need node-gyp and npm windows-build-tools to install the dApp:*****
+*****From node-gyp github:***** [install node-gyp](https://github.com/nodejs/node-gyp)
 
-    dir btu-protocol-implementation-earth/
+    npm install -g node-gyp
+    npm install --global --production windows-build-tools
 
-#### On Linux/ MacOS
+#### Then
 
     cd btu-protocol-implementation-earth/
 
