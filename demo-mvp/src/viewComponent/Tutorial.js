@@ -26,7 +26,7 @@ import customRPCconfig from '../img/customRPCconfig.png'
 import assignLocally from '../img/assignLocally.png'
 
 class Tutorial extends React.Component {
-  state = { activeIndex: 0 }
+  state = { activeIndex: -1 }
 
   handleClick = (e, titleProps) => {
     const { index } = titleProps
@@ -103,7 +103,7 @@ class Tutorial extends React.Component {
         }
       },
     ]
-    return (<Accordion>
+    return (<Accordion fluid styled>
                   <Accordion.Title active={activeIndex === 0} index={0} onClick={this.handleClick}>
                     <Icon name='dropdown' />
                     Connect <a target="_blank" rel="noopener noreferrer" href="https://metamask.io">Metamask</a> to your network
