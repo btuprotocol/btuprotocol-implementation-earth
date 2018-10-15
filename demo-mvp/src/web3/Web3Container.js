@@ -18,14 +18,12 @@ export default class Web3Container extends React.Component {
       }
       const BTUTokenSale = await getContract(web3, BTUTokenSaleabstraction)
       const RES = await getContract(web3, RESabstraction)
-      const btuAddress = await BTUTokenSale.btuToken.call()
+      const BTU = await getContract(web3, BTUabstraction)
       console.log('BTUTokenSale address = ' + BTUTokenSale.address)
-      console.log('BTU address = ' + btuAddress)
-      const BTU = new web3.eth.Contract(BTUabstraction.abi, btuAddress)
+      console.log('BTU address = ' + BTU.address)
       BTU.methods.balanceOf(accounts[0]).call(function(err, res) {
           console.log("You BTU balance = " + res)
       });
-      BTU.address = btuAddress
       BTU.BTUts = BTUTokenSale.address
       this.setState({ web3, accounts, RES, BTU })
     } catch (error) {
