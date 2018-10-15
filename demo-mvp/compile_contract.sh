@@ -8,6 +8,7 @@ fi
 cd "$1"
 truffle compile
 echo "Compilation ok"
-truffle migrate --reset
+truffle migrate --network ropsten
+			   #--reset
 echo "Migration ok"
 cd -
