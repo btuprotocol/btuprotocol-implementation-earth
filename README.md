@@ -19,7 +19,7 @@
 
 ## <a name="st"></a>Setup
 #### On windows:
-*****You need node-gyp and npm windows-build-tools to install the dApp:*****
+*****You need node-gyp to install the dApp:*****
 *****From node-gyp github:***** [install node-gyp](https://github.com/nodejs/node-gyp)
 
     npm install -g node-gyp
@@ -29,23 +29,9 @@
 
     cd btu-protocol-implementation-earth/
 
-### <a name="lo"></a>Local
+### <a name="lo"></a>Setup demo ropsten
 
     ./setup.sh or npm run setup
-
-This script will do several things:
-
-   - If truffle and ganache-cli aren't already installed on your computer,
-  it will offer you to install both of them. They are mandatory.
- [What is truffle?](https://nethereum.readthedocs.io/en/latest/ethereum-and-clients/ganache-cli/) / [What is ganache-cli?](https://nethereum.readthedocs.io/en/latest/ethereum-and-clients/ganache-cli/)
-   - Run a ganache-cli local test blockchain.
-   - Install, compile and migrate embedded versions of smart contracts.
-   - Save and reset ropsten ABIs already in src/BTU and src/RES folder.
-   - Install dApp dependencies throught npm.
-
-### <a name="ro"></a>Ethereum test network
-
-    npm install
 
 ### <a name="rd"></a>Run dApp
 
