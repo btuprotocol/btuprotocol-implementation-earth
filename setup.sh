@@ -4,7 +4,8 @@
 root=$PWD
 echo "Working Dir: $root"
 echo "Installing global dependencies, could take a while..."
-npm install
+yarn install
+npm install -g
 # then deploy dApp
 cd demo-mvp
 demomvp=$PWD
